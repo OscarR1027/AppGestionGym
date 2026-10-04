@@ -63,7 +63,11 @@ public class TypePlan {
         this.value = value;
     }
 
+    public List<GymService> getServices() {
+        return services;
+    }
 
-    
-
+    public void setServices(List<GymService> services) {
+        this.services = services;
+    }
 }

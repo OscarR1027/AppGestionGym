@@ -11,6 +11,7 @@ import com.oscarr.demoappgym.repository.ProductRepository;
 @Service 
 public class ProductService implements GenericCrud<Product,Long> {
 private final ProductRepository productRepository;
+private static final long LOW_STOCK_THRESHOLD = 5L;
 
 public ProductService(ProductRepository productRepository){
 
@@ -35,5 +36,9 @@ public Optional<Product> findById(Long id){
 @Override 
 public void deleteById (Long id){
     productRepository.deleteById(id);
+}
+
+public List<Product> findLowStockProducts() {
+    return productRepository.findByAmountLessThan(LOW_STOCK_THRESHOLD);
 }
 }

@@ -2,6 +2,7 @@ package com.oscarr.demoappgym.model.entity;
 
 import com.oscarr.demoappgym.model.enums.Role;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -54,6 +55,7 @@ public class User {
     }
 
     
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public String getPassword() {
         return password;
     }
