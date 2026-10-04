@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0d10">
+  <title>Pulso | Gestión del gimnasio</title>
+  <link rel="stylesheet" href="assets/app.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body>
+  <section id="login-screen" class="login-screen">
+    <form id="login-form" class="login-card">
+      <div class="brand brand-login"><img class="brand-logo" src="assets/nox3-fitness-logo.png" alt="NOX 3 Fitness"></div>
+      <p class="eyebrow"><span class="status-dot"></span> PANEL DE ADMINISTRACIÓN</p>
+      <h1>Bienvenido de nuevo</h1>
+      <p class="muted">Ingresa con tu correo y contraseña para administrar el gimnasio.</p>
+      <label>Correo electrónico<input name="email" type="email" autocomplete="username" required placeholder="correo@tugimnasio.com"></label>
+      <label>Contraseña<input name="password" type="password" autocomplete="current-password" required placeholder="Tu contraseña"></label>
+      <p id="login-error" class="message error" hidden></p>
+      <button class="button primary full" type="submit">Ingresar al panel <span>→</span></button>
+      <p class="login-foot">Ingresa con una cuenta ya registrada en el sistema y con rol Administrador (ADMIN).</p>
+    </form>
+  </section>
+
+  <div id="app-shell" class="app-shell" hidden>
+    <aside class="sidebar">
+      <a class="brand" href="#" data-view="dashboard" aria-label="NOX 3 Fitness, inicio"><img class="brand-logo" src="assets/nox3-fitness-logo.png" alt="NOX 3 Fitness"></a>
+      <p class="side-label">GESTIÓN</p>
+      <nav id="navigation" class="navigation" aria-label="Navegación principal"></nav>
+      <div class="sidebar-bottom">
+        <div class="user-badge"><span class="avatar">AD</span><span class="user-info"><strong id="signed-in-email">Administrador</strong><small>Sesión activa</small></span></div>
+        <button id="logout-button" class="logout-button" type="button">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div><p class="eyebrow">PANEL DE CONTROL</p><h1 id="page-title">Resumen general</h1><p id="page-subtitle" class="muted">Estado actual de tu gimnasio</p></div>
+        <div class="top-actions"><span id="today-label" class="today-label"></span><button class="button primary" type="button" data-action="new-sale">＋ Nueva venta</button></div>
+      </header>
+      <div id="toast" class="toast" role="status" hidden></div>
+      <section id="page-content" class="page-content" aria-live="polite"></section>
+    </main>
+  </div>
+
+  <dialog id="form-dialog" class="form-dialog"><form id="dialog-form" method="dialog"></form></dialog>
+</body>
+</html>

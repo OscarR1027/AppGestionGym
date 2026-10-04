@@ -3,6 +3,8 @@ package com.oscarr.demoappgym.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.oscarr.demoappgym.model.dto.UserRequest;
 import com.oscarr.demoappgym.model.dto.UserResponse;
 import com.oscarr.demoappgym.model.entity.User;
+import com.oscarr.demoappgym.model.enums.Role;
 import com.oscarr.demoappgym.service.UserService;
 
 import jakarta.validation.Valid;
@@ -30,9 +33,20 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest request) {
+    public ResponseEntity<UserResponse> createUser(
+            @Valid @RequestBody UserRequest request,
+            Authentication authentication) {
+        Role requestedRole = request.getRole();
+        boolean isAdmin = authentication != null
+                && authentication.getAuthorities().stream()
+                        .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
+        if (requestedRole != null && requestedRole != Role.USER && !isAdmin) {
+            throw new AccessDeniedException("Solo un administrador puede asignar el rol solicitado");
+        }
+
         User user = new User();
         applyRequest(user, request);
+        user.setRole(requestedRole == null ? Role.USER : requestedRole);
         return ResponseEntity.ok(toResponse(userService.save(user)));
     }
 

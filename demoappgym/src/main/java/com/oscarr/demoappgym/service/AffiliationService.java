@@ -16,8 +16,6 @@ import com.oscarr.demoappgym.model.entity.Affiliation;
 import com.oscarr.demoappgym.model.entity.AffiliationCoach;
 import com.oscarr.demoappgym.model.entity.AffiliationCoachId;
 import com.oscarr.demoappgym.model.entity.Coach;
-import com.oscarr.demoappgym.model.entity.TypePlan;
-import com.oscarr.demoappgym.model.entity.User;
 import com.oscarr.demoappgym.repository.AffiliationCoachRepository;
 import com.oscarr.demoappgym.repository.AffiliationRepository;
 import com.oscarr.demoappgym.repository.CoachRepository;
