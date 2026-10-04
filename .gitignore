@@ -1,0 +1,26 @@
+﻿# Compiled output de Maven
+target/
+
+# Wrapper de Maven (opcional dejarlo, pero si no lo usas, ignóralo)
+# .mvn/
+# mvnw
+# mvnw.cmd
+
+# IDE
+.vscode/
+.idea/
+*.iml
+.settings/
+.classpath
+.project
+
+# Logs
+*.log
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración de VS Code / Copilot
+argv.json
+extensions.json
