@@ -220,7 +220,7 @@
 
   function renderView() {
     renderNavigation();
-    appShell.dataset.view = state.view;
+    appShell.dataset.currentView = state.view;
     state.search = "";
     const titles = {
       dashboard: ["Resumen general", "Indicadores y actividad reciente del gimnasio"],
@@ -987,7 +987,7 @@
 
   document.body.addEventListener("click", async event => {
     const viewButton = event.target.closest("[data-view]");
-    if (viewButton && !viewButton.closest("#navigation")) {
+    if (viewButton && viewButton !== appShell && !viewButton.closest("#navigation")) {
       if (dialog.open) dialog.close();
       state.view = viewButton.dataset.view;
       renderView();
