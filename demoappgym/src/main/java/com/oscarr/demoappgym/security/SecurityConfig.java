@@ -1,5 +1,6 @@
 package com.oscarr.demoappgym.security;
 
+import java.util.Arrays;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -59,7 +60,16 @@ public class SecurityConfig {
 
     @Bean
     CorsConfigurationSource corsConfigurationSource(
-            @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:4200,http://localhost:5173}") List<String> allowedOrigins) {
+            @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:4200,http://localhost:5173}") String allowedOriginsValue) {
+        List<String> allowedOrigins = Arrays.stream(allowedOriginsValue.split(","))
+                .map(String::trim)
+                .filter(origin -> !origin.isEmpty())
+                .distinct()
+                .toList();
+        if (allowedOrigins.isEmpty()) {
+            allowedOrigins = List.of("http://localhost:3000", "http://localhost:4200", "http://localhost:5173");
+        }
+
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(allowedOrigins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));

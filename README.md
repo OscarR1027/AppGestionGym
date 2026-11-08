@@ -20,7 +20,7 @@ Vercel publica solo el frontend. Railway ejecutará Spring Boot y MySQL. Railway
    - `MYSQLDATABASE=${{MySQL.MYSQLDATABASE}}`
 
    Usa el selector de referencias de Railway en vez de escribir una contraseña literal. Si el servicio de base tiene otro nombre, reemplaza `MySQL` por ese nombre.
-4. Agrega `APP_CORS_ALLOWED_ORIGINS` con el dominio **Production** exacto de Vercel (incluye `https://`, sin rutas ni `/` final). Agrega `INVOICE_DELETE_PASSWORD` solo si quieres habilitar la cancelación protegida de facturas.
+4. Agrega `APP_CORS_ALLOWED_ORIGINS` con el dominio **Production** exacto de Vercel (incluye `https://`, sin rutas ni `/` final; no uses `*`). Si omites la variable, el backend arranca permitiendo solo orígenes locales y Vercel no podrá conectarse hasta que configures su dominio. Agrega `INVOICE_DELETE_PASSWORD` solo si quieres habilitar la cancelación protegida de facturas.
 5. En Railway → backend → **Settings → Networking**, selecciona **Generate Domain** para exponer el API por HTTPS. Configura la ruta de Healthcheck como `/actuator/health`. Railway asigna `PORT`; Spring lo usa automáticamente.
 6. Espera que el deployment esté en estado **Healthy**. Comprueba `https://<dominio-railway>/actuator/health` y confirma que responde `{"status":"UP"}`.
 7. En Vercel → **Settings → Environment Variables**, agrega `APP_API_BASE_URL=https://<dominio-railway>/api` para Production y vuelve a desplegar Vercel.
