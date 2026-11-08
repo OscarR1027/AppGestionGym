@@ -950,6 +950,9 @@
       if (response.status === 403) {
         throw new Error("La cuenta no tiene un rol asignado. Contacta al administrador del sistema.");
       }
+      if (response.status === 404) {
+        throw new Error("Vercel no encuentra el API de Spring Boot. Configura APP_API_BASE_URL con la URL pública del backend terminada en /api y vuelve a desplegar. Vercel solo aloja el frontend.");
+      }
       if (!response.ok) {
         throw new Error(`El servidor respondió con error (${response.status}).`);
       }
