@@ -5,7 +5,6 @@ import com.oscarr.demoappgym.model.entity.User;
 import com.oscarr.demoappgym.model.enums.Role;
 import com.oscarr.demoappgym.exception.BusinessException;
 import com.oscarr.demoappgym.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -141,11 +140,10 @@ class UserControllerTests {
     }
 
     @Test
-    void requestDistinguishesOmittedPhotoFromExplicitRemoval() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        UserRequest omitted = objectMapper.readValue("{}", UserRequest.class);
-        UserRequest removed = objectMapper.readValue("{\"photoData\":null}", UserRequest.class);
+    void requestDistinguishesOmittedPhotoFromExplicitRemoval() {
+        UserRequest omitted = new UserRequest();
+        UserRequest removed = new UserRequest();
+        removed.setPhotoData(null);
 
         assertFalse(omitted.hasPhotoData());
         assertTrue(removed.hasPhotoData());
