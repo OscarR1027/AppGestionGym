@@ -5,15 +5,21 @@ public class ProductResponse {
     private String nameProduct;
     private Double value;
     private Long amount;
+    private String photoData;
 
     public ProductResponse() {
     }
 
     public ProductResponse(Long id, String nameProduct, Double value, Long amount) {
+        this(id, nameProduct, value, amount, null);
+    }
+
+    public ProductResponse(Long id, String nameProduct, Double value, Long amount, String photoData) {
         this.id = id;
         this.nameProduct = nameProduct;
         this.value = value;
         this.amount = amount;
+        this.photoData = photoData;
     }
 
     public Long getId() {
@@ -46,5 +52,13 @@ public class ProductResponse {
 
     public void setAmount(Long amount) {
         this.amount = amount;
+    }
+
+    public String getPhotoData() {
+        return photoData;
+    }
+
+    public void setPhotoData(String photoData) {
+        this.photoData = photoData;
     }
 }

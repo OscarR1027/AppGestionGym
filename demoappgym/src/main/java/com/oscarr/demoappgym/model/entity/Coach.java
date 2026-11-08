@@ -19,6 +19,9 @@ private Long idCoach;
 @Column(nullable=false,length=100)
 private String nameCoach;
 
+@Column(name = "photo_data", columnDefinition = "LONGTEXT")
+private String photoData;
+
 public Coach(){}
 
 
@@ -43,6 +46,14 @@ public String getNameCoach() {
 
 public void setNameCoach(String nameCoach) {
     this.nameCoach = nameCoach;
+}
+
+public String getPhotoData() {
+    return photoData;
+}
+
+public void setPhotoData(String photoData) {
+    this.photoData = photoData;
 }
 
 }

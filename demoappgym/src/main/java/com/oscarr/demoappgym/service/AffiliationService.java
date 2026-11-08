@@ -65,6 +65,18 @@ public class AffiliationService implements GenericCrud<Affiliation,Long> {
     }
 
     @Transactional
+    public boolean cancelInvoice(Long id) {
+        Affiliation affiliation = affiliationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró la afiliación con ID " + id));
+        if (affiliation.isRenewal()) {
+            affiliation.setInvoiceCancelled(true);
+            return true;
+        }
+        deleteById(id);
+        return false;
+    }
+
+    @Transactional
     public Affiliation saveWithCoaches(Affiliation affiliation, List<AffiliationCoachRequest> coachRequests) {
         if (affiliation == null || affiliation.getUser() == null
                 || affiliation.getUser().getCodeUser() == null
@@ -76,6 +88,11 @@ public class AffiliationService implements GenericCrud<Affiliation,Long> {
                 && !affiliationRepository.existsById(affiliation.getNumberAffiliation())) {
             throw new ResourceNotFoundException(
                     "No se encontró la afiliación con ID " + affiliation.getNumberAffiliation());
+        }
+        if (!"CASH".equals(affiliation.getPaymentMethod())
+                && !"CARD".equals(affiliation.getPaymentMethod())
+                && !"TRANSFER".equals(affiliation.getPaymentMethod())) {
+            throw new BusinessException("Selecciona efectivo, tarjeta o transferencia como método de pago");
         }
 
         LocalDate affiliationDate = affiliation.getAffiliationDate() == null
@@ -91,6 +108,21 @@ public class AffiliationService implements GenericCrud<Affiliation,Long> {
         affiliation.setTypePlan(typePlanRepository.findById(affiliation.getTypePlan().getIdTypePlan())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "No se encontró el plan con ID " + affiliation.getTypePlan().getIdTypePlan())));
+        if (affiliation.getNumberAffiliation() == null) {
+            affiliation.setRenewal(affiliationRepository.existsByUser_CodeUser(affiliation.getUser().getCodeUser()));
+            affiliation.setPaidValue(affiliation.getTypePlan().getValue().doubleValue());
+        } else {
+            Affiliation existing = affiliationRepository.findById(affiliation.getNumberAffiliation())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "No se encontró la afiliación con ID " + affiliation.getNumberAffiliation()));
+            affiliation.setRenewal(existing.isRenewal());
+            affiliation.setInvoiceCancelled(existing.isInvoiceCancelled());
+            if (affiliation.getPaidValue() == null) {
+                affiliation.setPaidValue(existing.getPaidValue() == null
+                        ? affiliation.getTypePlan().getValue().doubleValue()
+                        : existing.getPaidValue());
+            }
+        }
 
         if (affiliation.getNumberAffiliation() != null) {
             affiliationCoachRepository.deleteAll(
@@ -146,7 +178,9 @@ public class AffiliationService implements GenericCrud<Affiliation,Long> {
 
     public List<Affiliation> findExpiringWithinThreeDays() {
         LocalDate today = LocalDate.now();
-        return affiliationRepository.findByEndAffiliationBetween(today, today.plusDays(3));
+        return affiliationRepository.findByEndAffiliationBetween(today, today.plusDays(3)).stream()
+                .filter(affiliation -> !affiliation.isInvoiceCancelled())
+                .toList();
     }
 
 }

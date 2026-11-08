@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.oscarr.demoappgym.exception.BusinessException;
 import com.oscarr.demoappgym.model.dto.UserRequest;
 import com.oscarr.demoappgym.model.dto.UserResponse;
 import com.oscarr.demoappgym.model.entity.User;
@@ -43,39 +44,46 @@ public class UserController {
         if (requestedRole != null && requestedRole != Role.USER && !isAdmin) {
             throw new AccessDeniedException("Solo un administrador puede asignar el rol solicitado");
         }
+        if (request.getPassword() == null || request.getPassword().isBlank()) {
+            throw new BusinessException("La contraseña es obligatoria para crear un usuario");
+        }
+        if (request.getDocumentNumber() == null || request.getDocumentNumber().isBlank()) {
+            throw new BusinessException("La cédula de identidad es obligatoria para crear un usuario");
+        }
 
         User user = new User();
         applyRequest(user, request);
         user.setRole(requestedRole == null ? Role.USER : requestedRole);
-        return ResponseEntity.ok(toResponse(userService.save(user)));
+        return ResponseEntity.ok(toResponse(userService.save(user), false));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUser(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody UserRequest request) {
         return userService.findById(id)
                 .map(existing -> {
                     applyRequest(existing, request);
-                    return ResponseEntity.ok(toResponse(userService.save(existing)));
+                    return ResponseEntity.ok(toResponse(userService.save(existing), false));
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUser() {
-        return ResponseEntity.ok(userService.findAll().stream().map(this::toResponse).toList());
+        return ResponseEntity.ok(userService.findAll().stream()
+                .map(user -> toResponse(user, false)).toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable("id") Long id) {
         return userService.findById(id)
-                .map(user -> ResponseEntity.ok(toResponse(user)))
+                .map(user -> ResponseEntity.ok(toResponse(user, false)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
         userService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
@@ -83,16 +91,23 @@ public class UserController {
     private void applyRequest(User user, UserRequest request) {
         user.setName(request.getName());
         user.setAddress(request.getAddress());
-        user.setPassword(request.getPassword());
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            user.setPassword(request.getPassword());
+        }
         user.setPhoneNumber(request.getPhoneNumber());
+        user.setDocumentNumber(request.getDocumentNumber());
+        if (request.getPhotoData() != null) {
+            user.setPhotoData(request.getPhotoData());
+        }
         user.setMail(request.getMail());
         user.setPhysicalConditionReport(request.getPhysicalConditionReport());
         user.setRole(request.getRole());
     }
 
-    private UserResponse toResponse(User user) {
+    private UserResponse toResponse(User user, boolean includePassword) {
         return new UserResponse(user.getCodeUser(), user.getName(), user.getAddress(),
-                user.getPhoneNumber(), user.getMail(), user.getPhysicalConditionReport(),
+                user.getPhoneNumber(), user.getMail(), user.getDocumentNumber(),
+                includePassword ? user.getPassword() : null, user.getPhotoData(), user.getPhysicalConditionReport(),
                 user.getRole() == null ? null : user.getRole().name());
     }
 }

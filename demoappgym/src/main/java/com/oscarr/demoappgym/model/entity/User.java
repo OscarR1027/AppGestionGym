@@ -34,6 +34,12 @@ public class User {
     @Column(name="mail",length=100,nullable = false)
         private String mail;
 
+    @Column(name = "document_number", length = 30)
+        private String documentNumber;
+
+    @Column(name = "photo_data", columnDefinition = "LONGTEXT")
+        private String photoData;
+
     @Column(name="Physical_Condition_Report",length=300,nullable=true)
         private String physicalConditionReport;
 
@@ -110,6 +116,22 @@ public class User {
 
     public void setMail(String mail) {
         this.mail = mail;
+    }
+
+    public String getDocumentNumber() {
+        return documentNumber;
+    }
+
+    public void setDocumentNumber(String documentNumber) {
+        this.documentNumber = documentNumber;
+    }
+
+    public String getPhotoData() {
+        return photoData;
+    }
+
+    public void setPhotoData(String photoData) {
+        this.photoData = photoData;
     }
 
     public String getPhysicalConditionReport() {

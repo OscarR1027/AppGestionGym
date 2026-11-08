@@ -24,6 +24,12 @@
   </section>
 
   <div id="app-shell" class="app-shell" hidden>
+    <header class="mobile-header">
+      <a class="mobile-brand" href="#" data-view="dashboard" aria-label="NOX 3 Fitness, inicio"><img src="assets/nox3-fitness-logo.png" alt="NOX 3 Fitness"></a>
+      <button class="mobile-profile" type="button" data-action="mobile-menu" aria-label="Abrir perfil y menú" aria-haspopup="dialog">
+        <span class="avatar" id="mobile-avatar">AD</span>
+      </button>
+    </header>
     <aside class="sidebar">
       <a class="brand" href="#" data-view="dashboard" aria-label="NOX 3 Fitness, inicio"><img class="brand-logo" src="assets/nox3-fitness-logo.png" alt="NOX 3 Fitness"></a>
       <p class="side-label">GESTIÓN</p>
@@ -42,6 +48,8 @@
       <div id="toast" class="toast" role="status" hidden></div>
       <section id="page-content" class="page-content" aria-live="polite"></section>
     </main>
+    <nav id="mobile-navigation" class="mobile-navigation" aria-label="Navegación inferior"></nav>
+    <button class="mobile-fab" type="button" data-action="new-sale" aria-label="Crear nueva venta"><span aria-hidden="true">＋</span> Nueva venta</button>
   </div>
 
   <dialog id="form-dialog" class="form-dialog"><form id="dialog-form" method="dialog"></form></dialog>

@@ -10,4 +10,6 @@ import com.oscarr.demoappgym.model.entity.Affiliation;
 public interface AffiliationRepository extends JpaRepository<Affiliation,Long> {
 
     List<Affiliation> findByEndAffiliationBetween(LocalDate startDate, LocalDate endDate);
+
+    boolean existsByUser_CodeUser(Long userId);
 }

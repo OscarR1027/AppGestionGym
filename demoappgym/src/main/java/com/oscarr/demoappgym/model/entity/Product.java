@@ -23,6 +23,9 @@ public class Product {
     @Column (precision=5,nullable = true)
     private Long amount;
 
+    @Column(name = "photo_data", columnDefinition = "LONGTEXT")
+    private String photoData;
+
     public Product(){}
 
     public Product(Long codeProducts, String nameProduct, Double value, Long amount) {
@@ -62,6 +65,14 @@ public class Product {
 
     public void setAmount(Long amount) {
         this.amount = amount;
+    }
+
+    public String getPhotoData() {
+        return photoData;
+    }
+
+    public void setPhotoData(String photoData) {
+        this.photoData = photoData;
     }
 
     

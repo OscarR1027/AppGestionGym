@@ -29,6 +29,9 @@ public class Sale {
     @Column (name="Total_Value",precision = 12,nullable = false)
     private Double totalValue;
 
+    @Column(name = "payment_method", length = 20)
+    private String paymentMethod;
+
     public Sale(){}
 
     public Sale(Long idBillSale, User user, LocalDate saleDate, Double totalValue) {
@@ -68,6 +71,14 @@ public class Sale {
 
     public void setTotalValue(Double totalValue) {
         this.totalValue = totalValue;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
     
     

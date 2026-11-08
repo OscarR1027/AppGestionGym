@@ -38,7 +38,7 @@ public class GymServiceController {
 
     @PutMapping("/{id}")
     public ResponseEntity<GymServiceResponse> updateGymService(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody GymServiceRequest request) {
         return gymServiceService.findById(id)
                 .map(service -> {
@@ -54,14 +54,14 @@ public class GymServiceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GymServiceResponse> getGymServiceById(@PathVariable Long id) {
+    public ResponseEntity<GymServiceResponse> getGymServiceById(@PathVariable("id") Long id) {
         return gymServiceService.findById(id)
                 .map(service -> ResponseEntity.ok(toResponse(service)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGymService(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteGymService(@PathVariable("id") Long id) {
         gymServiceService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

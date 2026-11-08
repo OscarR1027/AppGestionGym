@@ -1,8 +1,14 @@
 package com.oscarr.demoappgym.controller;
 
 import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +34,9 @@ public class AffiliationController {
 
     private final AffiliationService affiliationService;
 
+    @Value("${INVOICE_DELETE_PASSWORD:}")
+    private String invoiceDeletePassword;
+
     public AffiliationController(AffiliationService affiliationService) {
         this.affiliationService = affiliationService;
     }
@@ -42,7 +51,7 @@ public class AffiliationController {
 
     @PutMapping("/{id}")
     public ResponseEntity<AffiliationResponse> updateAffiliation(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody AffiliationRequest request) {
         Affiliation affiliation = fromRequest(request);
         affiliation.setNumberAffiliation(id);
@@ -63,15 +72,18 @@ public class AffiliationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AffiliationResponse> getAffiliationById(@PathVariable Long id) {
+    public ResponseEntity<AffiliationResponse> getAffiliationById(@PathVariable("id") Long id) {
         return affiliationService.findById(id)
                 .map(affiliation -> ResponseEntity.ok(toResponse(affiliation)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAffiliation(@PathVariable Long id) {
-        affiliationService.deleteById(id);
+    public ResponseEntity<Void> deleteAffiliation(
+            @PathVariable("id") Long id,
+            @RequestBody Map<String, String> request) {
+        validateInvoiceDeletePassword(request.get("password"));
+        affiliationService.cancelInvoice(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -85,6 +97,7 @@ public class AffiliationController {
         affiliation.setTypePlan(typePlan);
         affiliation.setAffiliationDate(request.getAffiliationDate());
         affiliation.setEndAffiliation(request.getEndAffiliation());
+        affiliation.setPaymentMethod(request.getPaymentMethod());
         return affiliation;
     }
 
@@ -101,11 +114,29 @@ public class AffiliationController {
         response.setId(affiliation.getNumberAffiliation());
         response.setUserId(affiliation.getUser().getCodeUser());
         response.setUserName(affiliation.getUser().getName());
+        response.setUserDocumentNumber(affiliation.getUser().getDocumentNumber());
+        response.setUserPhoneNumber(affiliation.getUser().getPhoneNumber());
         response.setAffiliationDate(affiliation.getAffiliationDate());
         response.setEndAffiliation(affiliation.getEndAffiliation());
         response.setTypePlanId(affiliation.getTypePlan().getIdTypePlan());
         response.setTypePlanName(affiliation.getTypePlan().getNamePlan());
+        response.setPaidValue(affiliation.getPaidValue());
+        response.setPaymentMethod(affiliation.getPaymentMethod());
+        response.setRenewal(affiliation.isRenewal());
+        response.setInvoiceCancelled(affiliation.isInvoiceCancelled());
         response.setCoaches(coaches);
         return response;
+    }
+
+    private void validateInvoiceDeletePassword(String suppliedPassword) {
+        if (invoiceDeletePassword == null || invoiceDeletePassword.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "La anulación de facturas no está configurada en el servidor");
+        }
+        if (suppliedPassword == null || !MessageDigest.isEqual(
+                invoiceDeletePassword.getBytes(StandardCharsets.UTF_8),
+                suppliedPassword.getBytes(StandardCharsets.UTF_8))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Contraseña de anulación incorrecta");
+        }
     }
 }

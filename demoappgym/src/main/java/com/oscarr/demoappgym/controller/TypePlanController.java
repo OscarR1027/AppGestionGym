@@ -44,7 +44,7 @@ public class TypePlanController {
 
     @PutMapping("/{id}")
     public ResponseEntity<TypePlanResponse> updateTypePlan(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody TypePlanRequest request) {
         Optional<TypePlan> existing = typePlanService.findById(id);
         if (existing.isEmpty()) {
@@ -61,14 +61,14 @@ public class TypePlanController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TypePlanResponse> getTypePlanById(@PathVariable Long id) {
+    public ResponseEntity<TypePlanResponse> getTypePlanById(@PathVariable("id") Long id) {
         return typePlanService.findById(id)
                 .map(typePlan -> ResponseEntity.ok(toResponse(typePlan)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTypePlan(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTypePlan(@PathVariable("id") Long id) {
         typePlanService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

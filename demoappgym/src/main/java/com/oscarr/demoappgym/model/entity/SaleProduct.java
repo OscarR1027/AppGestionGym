@@ -1,11 +1,12 @@
 package com.oscarr.demoappgym.model.entity;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 
 @Entity 
@@ -13,16 +14,18 @@ import jakarta.persistence.Table;
 public class SaleProduct {
 
 @EmbeddedId 
+@AttributeOverrides({
+    @AttributeOverride(name = "idBillSale", column = @Column(name = "`idBillSale`")),
+    @AttributeOverride(name = "codeProduct", column = @Column(name = "`codeProduct`"))
+})
 private SaleProductId id = new SaleProductId();
 
 @ManyToOne 
-@MapsId ("codeProduct")
-@JoinColumn (name="codeProduct",nullable = false)
+@JoinColumn (name="code_product",nullable = false)
 private Product product;
 
 @ManyToOne 
-@MapsId ("idBillSale")
-@JoinColumn (name="idBillSale",nullable = false)
+@JoinColumn (name="id_bill_sale",nullable = false)
 private Sale sale;
 
 @Column (name="Amount",nullable = false)

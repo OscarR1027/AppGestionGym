@@ -33,16 +33,20 @@ public class CoachController {
     public ResponseEntity<CoachResponse> createCoach(@Valid @RequestBody CoachRequest request) {
         Coach coach = new Coach();
         coach.setNameCoach(request.getNameCoach());
+        coach.setPhotoData(request.getPhotoData());
         return ResponseEntity.ok(toResponse(coachService.save(coach)));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CoachResponse> updateCoach(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody CoachRequest request) {
         return coachService.findById(id)
                 .map(coach -> {
                     coach.setNameCoach(request.getNameCoach());
+                    if (request.getPhotoData() != null) {
+                        coach.setPhotoData(request.getPhotoData());
+                    }
                     return ResponseEntity.ok(toResponse(coachService.save(coach)));
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -54,19 +58,19 @@ public class CoachController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CoachResponse> getCoachById(@PathVariable Long id) {
+    public ResponseEntity<CoachResponse> getCoachById(@PathVariable("id") Long id) {
         return coachService.findById(id)
                 .map(coach -> ResponseEntity.ok(toResponse(coach)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCoach(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCoach(@PathVariable("id") Long id) {
         coachService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     private CoachResponse toResponse(Coach coach) {
-        return new CoachResponse(coach.getIdCoach(), coach.getNameCoach());
+        return new CoachResponse(coach.getIdCoach(), coach.getNameCoach(), coach.getPhotoData());
     }
 }

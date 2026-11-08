@@ -7,20 +7,26 @@ public class SaleResponse {
     private Long id;
     private Long userId;
     private String userName;
+    private String userDocumentNumber;
+    private Long userPhoneNumber;
     private LocalDate saleDate;
     private Double totalValue;
+    private String paymentMethod;
     private List<SaleProductResponse> products;
 
     public SaleResponse() {
     }
 
-    public SaleResponse(Long id, Long userId, String userName, LocalDate saleDate, Double totalValue,
-            List<SaleProductResponse> products) {
+    public SaleResponse(Long id, Long userId, String userName, String userDocumentNumber, Long userPhoneNumber,
+            LocalDate saleDate, Double totalValue, String paymentMethod, List<SaleProductResponse> products) {
         this.id = id;
         this.userId = userId;
         this.userName = userName;
+        this.userDocumentNumber = userDocumentNumber;
+        this.userPhoneNumber = userPhoneNumber;
         this.saleDate = saleDate;
         this.totalValue = totalValue;
+        this.paymentMethod = paymentMethod;
         this.products = products;
     }
 
@@ -48,6 +54,22 @@ public class SaleResponse {
         this.userName = userName;
     }
 
+    public String getUserDocumentNumber() {
+        return userDocumentNumber;
+    }
+
+    public void setUserDocumentNumber(String userDocumentNumber) {
+        this.userDocumentNumber = userDocumentNumber;
+    }
+
+    public Long getUserPhoneNumber() {
+        return userPhoneNumber;
+    }
+
+    public void setUserPhoneNumber(Long userPhoneNumber) {
+        this.userPhoneNumber = userPhoneNumber;
+    }
+
     public LocalDate getSaleDate() {
         return saleDate;
     }
@@ -62,6 +84,14 @@ public class SaleResponse {
 
     public void setTotalValue(Double totalValue) {
         this.totalValue = totalValue;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     public List<SaleProductResponse> getProducts() {

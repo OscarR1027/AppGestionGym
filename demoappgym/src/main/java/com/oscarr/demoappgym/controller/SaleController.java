@@ -1,8 +1,14 @@
 package com.oscarr.demoappgym.controller;
 
 import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +33,9 @@ public class SaleController {
 
     private final SaleService saleService;
 
+    @Value("${INVOICE_DELETE_PASSWORD:}")
+    private String invoiceDeletePassword;
+
     public SaleController(SaleService saleService) {
         this.saleService = saleService;
     }
@@ -38,7 +47,7 @@ public class SaleController {
 
     @PutMapping("/{id}")
     public ResponseEntity<SaleResponse> updateSale(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody SaleRequest request) {
         return ResponseEntity.ok(toResponse(saleService.updateWithProducts(id, request)));
     }
@@ -54,19 +63,22 @@ public class SaleController {
     }
 
     @GetMapping("/{id}/factura")
-    public ResponseEntity<SaleResponse> getInvoice(@PathVariable Long id) {
+    public ResponseEntity<SaleResponse> getInvoice(@PathVariable("id") Long id) {
         return saleService.findById(id)
                 .map(sale -> ResponseEntity.ok(toResponse(sale)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SaleResponse> getSaleById(@PathVariable Long id) {
+    public ResponseEntity<SaleResponse> getSaleById(@PathVariable("id") Long id) {
         return getInvoice(id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSale(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteSale(
+            @PathVariable("id") Long id,
+            @RequestBody Map<String, String> request) {
+        validateInvoiceDeletePassword(request.get("password"));
         saleService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
@@ -84,8 +96,23 @@ public class SaleController {
                 sale.getIdBillSale(),
                 sale.getUser().getCodeUser(),
                 sale.getUser().getName(),
+                sale.getUser().getDocumentNumber(),
+                sale.getUser().getPhoneNumber(),
                 sale.getSaleDate(),
                 sale.getTotalValue(),
+                sale.getPaymentMethod(),
                 products);
+    }
+
+    private void validateInvoiceDeletePassword(String suppliedPassword) {
+        if (invoiceDeletePassword == null || invoiceDeletePassword.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "La anulación de facturas no está configurada en el servidor");
+        }
+        if (suppliedPassword == null || !MessageDigest.isEqual(
+                invoiceDeletePassword.getBytes(StandardCharsets.UTF_8),
+                suppliedPassword.getBytes(StandardCharsets.UTF_8))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Contraseña de anulación incorrecta");
+        }
     }
 }

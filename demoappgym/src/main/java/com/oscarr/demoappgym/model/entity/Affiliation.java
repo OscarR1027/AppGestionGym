@@ -33,6 +33,18 @@ public class Affiliation {
     @JoinColumn (name="idTypePlan",nullable = false)
     private TypePlan typePlan;
 
+    @Column(name = "paid_value", precision = 12)
+    private Double paidValue;
+
+    @Column(name = "payment_method", length = 20)
+    private String paymentMethod;
+
+    @Column(name = "is_renewal", nullable = false)
+    private boolean renewal;
+
+    @Column(name = "invoice_cancelled", nullable = false)
+    private boolean invoiceCancelled;
+
     public Affiliation(){}
 
     public Affiliation(Long numberAffiliation, User user, LocalDate affiliationDate, 
@@ -83,6 +95,38 @@ public class Affiliation {
 
     public void setTypePlan(TypePlan typePlan) {
         this.typePlan = typePlan;
+    }
+
+    public Double getPaidValue() {
+        return paidValue;
+    }
+
+    public void setPaidValue(Double paidValue) {
+        this.paidValue = paidValue;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public boolean isRenewal() {
+        return renewal;
+    }
+
+    public void setRenewal(boolean renewal) {
+        this.renewal = renewal;
+    }
+
+    public boolean isInvoiceCancelled() {
+        return invoiceCancelled;
+    }
+
+    public void setInvoiceCancelled(boolean invoiceCancelled) {
+        this.invoiceCancelled = invoiceCancelled;
     }
 
     

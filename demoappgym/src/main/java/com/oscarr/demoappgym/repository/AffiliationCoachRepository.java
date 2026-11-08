@@ -13,4 +13,6 @@ public interface AffiliationCoachRepository extends JpaRepository<AffiliationCoa
 
     @Query("SELECT ac FROM AffiliationCoach ac WHERE ac.affiliation.numberAffiliation = :affiliationId")
     List<AffiliationCoach> findAllByAffiliationId(@Param("affiliationId") Long affiliationId);
+
+    boolean existsByCoach_IdCoach(Long coachId);
 }

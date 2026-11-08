@@ -135,6 +135,9 @@ public class SaleService implements GenericCrud<Sale,Long> {
                 || request.getProducts() == null || request.getProducts().isEmpty()) {
             throw new BusinessException("El usuario y al menos un producto son obligatorios");
         }
+        if (!isSupportedPaymentMethod(request.getPaymentMethod())) {
+            throw new BusinessException("Selecciona efectivo, tarjeta o transferencia como método de pago");
+        }
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "No se encontró el usuario con ID " + request.getUserId()));
@@ -190,6 +193,7 @@ public class SaleService implements GenericCrud<Sale,Long> {
         sale.setUser(user);
         sale.setSaleDate(LocalDate.now());
         sale.setTotalValue(total.doubleValue());
+        sale.setPaymentMethod(request.getPaymentMethod());
         sale = saleRepository.save(sale);
 
         for (SaleProduct saleProduct : saleProducts) {
@@ -201,6 +205,10 @@ public class SaleService implements GenericCrud<Sale,Long> {
         saleProductRepository.saveAll(saleProducts);
         productRepository.saveAll(productsById.values());
         return sale;
+    }
+
+    private boolean isSupportedPaymentMethod(String paymentMethod) {
+        return "CASH".equals(paymentMethod) || "CARD".equals(paymentMethod) || "TRANSFER".equals(paymentMethod);
     }
 
     @Transactional(readOnly = true)

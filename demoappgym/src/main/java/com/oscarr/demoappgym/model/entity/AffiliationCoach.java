@@ -2,14 +2,13 @@ package com.oscarr.demoappgym.model.entity;
 
 import java.time.LocalDate;
 
-
-
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 
 @Entity 
@@ -17,16 +16,18 @@ import jakarta.persistence.Table;
 public class AffiliationCoach {
 
     @EmbeddedId 
+    @AttributeOverrides({
+        @AttributeOverride(name = "idCoach", column = @Column(name = "`idCoach`")),
+        @AttributeOverride(name = "numberAffiliation", column = @Column(name = "`numberAffiliation`"))
+    })
     private AffiliationCoachId Id= new AffiliationCoachId();
 
     @ManyToOne 
-    @MapsId ("idCoach")
-    @JoinColumn (name="idCoach",nullable = false)
+    @JoinColumn (name="id_coach",nullable = false)
     private Coach coach;
 
     @ManyToOne 
-    @MapsId ("numberAffiliation")
-    @JoinColumn (name="numberAffiliation",nullable=false)
+    @JoinColumn (name="number_affiliation",nullable=false)
     private Affiliation affiliation;
 
     @Column (name="Start_Date",nullable = false)

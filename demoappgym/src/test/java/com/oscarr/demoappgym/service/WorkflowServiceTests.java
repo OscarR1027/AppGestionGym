@@ -1,7 +1,9 @@
 package com.oscarr.demoappgym.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyIterable;
 import static org.mockito.Mockito.never;
@@ -71,6 +73,7 @@ class WorkflowServiceTests {
         TypePlan plan = new TypePlan();
         plan.setIdTypePlan(8L);
         plan.setNamePlan("Mensual");
+        plan.setValue(45000);
         Coach coach = new Coach(12L, "Luis");
         LocalDate start = LocalDate.of(2026, 10, 1);
         LocalDate end = LocalDate.of(2026, 10, 31);
@@ -78,6 +81,7 @@ class WorkflowServiceTests {
         when(userRepository.findById(4L)).thenReturn(Optional.of(user));
         when(typePlanRepository.findById(8L)).thenReturn(Optional.of(plan));
         when(coachRepository.findById(12L)).thenReturn(Optional.of(coach));
+        when(affiliationRepository.existsByUser_CodeUser(4L)).thenReturn(true);
         when(affiliationRepository.save(any(Affiliation.class))).thenAnswer(invocation -> {
             Affiliation saved = invocation.getArgument(0);
             saved.setNumberAffiliation(25L);
@@ -89,6 +93,7 @@ class WorkflowServiceTests {
         affiliation.setTypePlan(plan);
         affiliation.setAffiliationDate(start);
         affiliation.setEndAffiliation(end);
+        affiliation.setPaymentMethod("CASH");
         AffiliationCoachRequest coachRequest = new AffiliationCoachRequest();
         coachRequest.setCoachId(12L);
 
@@ -97,9 +102,31 @@ class WorkflowServiceTests {
         assertEquals(25L, saved.getNumberAffiliation());
         assertEquals("Ana", saved.getUser().getName());
         assertEquals(8L, saved.getTypePlan().getIdTypePlan());
+        assertEquals(45000.0, saved.getPaidValue());
+        assertTrue(saved.isRenewal());
         assertEquals(start, saved.getAffiliationDate());
         assertEquals(end, saved.getEndAffiliation());
         verify(affiliationCoachRepository).saveAll(anyIterable());
+    }
+
+    @Test
+    void cancellationKeepsRenewalButRemovesNewAffiliation() {
+        Affiliation renewal = new Affiliation();
+        renewal.setNumberAffiliation(25L);
+        renewal.setRenewal(true);
+        when(affiliationRepository.findById(25L)).thenReturn(Optional.of(renewal));
+
+        assertTrue(affiliationService.cancelInvoice(25L));
+        assertTrue(renewal.isInvoiceCancelled());
+        verify(affiliationRepository, never()).deleteById(25L);
+
+        Affiliation initial = new Affiliation();
+        initial.setNumberAffiliation(26L);
+        when(affiliationRepository.findById(26L)).thenReturn(Optional.of(initial));
+        when(affiliationCoachRepository.findAllByAffiliationId(26L)).thenReturn(List.of());
+
+        assertFalse(affiliationService.cancelInvoice(26L));
+        verify(affiliationRepository).deleteById(26L);
     }
 
     @Test
@@ -116,7 +143,7 @@ class WorkflowServiceTests {
             return saved;
         });
 
-        SaleRequest request = new SaleRequest(4L, List.of(new SaleProductRequest(9L, 3L)));
+        SaleRequest request = new SaleRequest(4L, "CASH", List.of(new SaleProductRequest(9L, 3L)));
 
         Sale response = saleService.createWithProducts(request);
 
@@ -141,7 +168,7 @@ class WorkflowServiceTests {
         when(userRepository.findById(4L)).thenReturn(Optional.of(user));
         when(productRepository.findByIdForUpdate(9L)).thenReturn(Optional.of(product));
 
-        SaleRequest request = new SaleRequest(4L, List.of(new SaleProductRequest(9L, 2L)));
+        SaleRequest request = new SaleRequest(4L, "CASH", List.of(new SaleProductRequest(9L, 2L)));
 
         assertThrows(InsufficientStockException.class, () -> saleService.createWithProducts(request));
         verify(saleRepository, never()).save(any(Sale.class));

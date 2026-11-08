@@ -1,11 +1,18 @@
 package com.oscarr.demoappgym.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 public class CoachRequest {
 
     @NotBlank(message = "El nombre del coach es obligatorio")
     private String nameCoach;
+
+    @Size(max = 1400000, message = "La foto no puede superar 1 MB")
+    @Pattern(regexp = "^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$",
+            message = "La foto debe ser una imagen PNG, JPEG o WEBP válida")
+    private String photoData;
 
     public CoachRequest() {
     }
@@ -20,5 +27,13 @@ public class CoachRequest {
 
     public void setNameCoach(String nameCoach) {
         this.nameCoach = nameCoach;
+    }
+
+    public String getPhotoData() {
+        return photoData;
+    }
+
+    public void setPhotoData(String photoData) {
+        this.photoData = photoData;
     }
 }

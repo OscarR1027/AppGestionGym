@@ -5,6 +5,7 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 public class AffiliationRequest {
 
@@ -13,6 +14,9 @@ public class AffiliationRequest {
 
     @NotNull(message = "El plan es obligatorio")
     private Long typePlanId;
+
+    @NotBlank(message = "El método de pago es obligatorio")
+    private String paymentMethod;
 
     private LocalDate affiliationDate;
 
@@ -39,6 +43,14 @@ public class AffiliationRequest {
 
     public void setTypePlanId(Long typePlanId) {
         this.typePlanId = typePlanId;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     public LocalDate getAffiliationDate() {

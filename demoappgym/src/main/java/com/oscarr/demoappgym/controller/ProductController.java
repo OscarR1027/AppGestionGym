@@ -39,7 +39,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody ProductRequest request) {
         Optional<Product> existing = productService.findById(id);
         if (existing.isEmpty()) {
@@ -61,14 +61,14 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable("id") Long id) {
         return productService.findById(id)
                 .map(product -> ResponseEntity.ok(toResponse(product)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable("id") Long id) {
         productService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
@@ -77,10 +77,13 @@ public class ProductController {
         product.setName_Product(request.getNameProduct());
         product.setValue(request.getValue());
         product.setAmount(request.getAmount());
+        if (request.getPhotoData() != null) {
+            product.setPhotoData(request.getPhotoData());
+        }
     }
 
     private ProductResponse toResponse(Product product) {
         return new ProductResponse(product.getCode_Products(), product.getName_Product(),
-                product.getValue(), product.getAmount());
+                product.getValue(), product.getAmount(), product.getPhotoData());
     }
 }
