@@ -1,4 +1,6 @@
-(() => {
+import { handleAuthCallback, acceptInvite, updateUser } from "./vendor/identity.js";
+
+(async () => {
   "use strict";
 
   const API = "/api";
@@ -11,15 +13,14 @@
       fields: [
         { name: "name", label: "Nombre", required: true },
         { name: "mail", label: "Correo electrónico", type: "email", required: true },
-        { name: "password", label: "Contraseña", type: "password", help: "En edición, deja el campo vacío para conservar la actual o escribe una nueva contraseña." },
         { name: "address", label: "Dirección", required: true },
-        { name: "phoneNumber", label: "Teléfono", type: "number", required: true },
+        { name: "phoneNumber", label: "Teléfono", type: "tel", required: true },
         { name: "documentNumber", label: "Cédula de identidad", required: true, createOnlyRequired: true },
         { name: "photoData", label: "Foto de la persona (opcional)", type: "photo", wide: true },
         { name: "physicalConditionReport", label: "Reporte de condición física", type: "textarea" },
         { name: "role", label: "Rol", type: "select", options: [["USER", "Cliente"], ["COACH", "Entrenador"], ["ADMIN", "Administrador"]] }
       ],
-      payload: form => ({ name: form.name, mail: form.mail, password: form.password, address: form.address, phoneNumber: Number(form.phoneNumber), documentNumber: form.documentNumber, photoData: form.photoData || null, physicalConditionReport: form.physicalConditionReport || null, role: form.role || "USER" })
+      payload: form => ({ name: form.name, mail: form.mail, address: form.address, phoneNumber: form.phoneNumber, documentNumber: form.documentNumber, photoData: form.photoData || null, physicalConditionReport: form.physicalConditionReport || null, role: form.role || "USER" })
     },
     coaches: {
       label: "Entrenadores", singular: "entrenador", path: "/coachs", id: "idCoach",
@@ -96,7 +97,9 @@
     ["dashboard", "Inicio", "⌂"], ["sales", "Ventas", "▤"], ["users", "Clientes", "♙"]
   ];
   const state = {
-    auth: sessionStorage.getItem(tokenKey) || "",
+    auth: "",
+    authMode: "login",
+    inviteToken: null,
     email: sessionStorage.getItem("pulso.email") || "",
     view: "dashboard",
     cache: {},
@@ -121,7 +124,9 @@
     const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
     return local.toISOString().slice(0, 10);
   };
-  const authHeaders = () => state.auth ? { Authorization: `Basic ${state.auth}` } : {};
+  const authHeaders = () => ({});
+  // Discard credentials stored by the former Java login. Sessions now use Identity cookies.
+  sessionStorage.removeItem(tokenKey);
 
   async function api(path, options = {}, allowUnauthorized = false) {
     const headers = { ...authHeaders(), ...(options.headers || {}) };
@@ -180,6 +185,7 @@
   }
 
   function logout(message = "") {
+    fetch(`${API}/auth/logout`, { method: "POST" }).catch(() => {});
     if (state.logoutInProgress) return;
     state.logoutInProgress = true;
     state.auth = "";
@@ -874,7 +880,7 @@
         : "Se anulará la factura y se eliminará la afiliación nueva."
       : "Se anulará la venta y se devolverán sus productos al inventario.";
     openDialog("Anular factura", description,
-      `<label>Contraseña especial<input name="password" type="password" required autocomplete="off"></label>`,
+      `<label>Contraseña de administrador<input name="password" type="password" required autocomplete="off"></label>`,
       async formData => {
         await api(endpoint, { method: "DELETE", body: JSON.stringify({ password: String(formData.get("password") || "") }) });
         state.cache.sales = null;
@@ -930,46 +936,67 @@
     }
   }
 
+  function setAuthMode(mode) {
+    state.authMode = mode;
+    const form = document.querySelector("#login-form");
+    const password = form.elements.password;
+    const email = form.elements.email;
+    password.value = "";
+    password.required = mode !== "recover";
+    password.closest("label").hidden = mode === "recover";
+    password.minLength = ["reset", "invite"].includes(mode) ? 12 : 1;
+    password.autocomplete = mode === "login" ? "current-password" : "new-password";
+    email.required = !["reset", "invite"].includes(mode);
+    email.closest("label").hidden = ["reset", "invite"].includes(mode);
+    const titles = { login: "Bienvenido de nuevo", recover: "Recupera tu acceso", reset: "Elige una nueva contraseña", invite: "Activa tu cuenta" };
+    const labels = { login: "Ingresar al panel →", recover: "Enviar enlace de recuperación", reset: "Guardar contraseña", invite: "Activar cuenta" };
+    form.querySelector("h1").textContent = titles[mode];
+    form.querySelector('[type="submit"]').textContent = labels[mode];
+    form.querySelectorAll("[data-auth-mode]").forEach(button => {
+      button.hidden = button.dataset.authMode === mode || (["reset", "invite"].includes(mode) && button.dataset.authMode !== "login");
+    });
+    showLogin();
+  }
+  document.querySelectorAll("[data-auth-mode]").forEach(button => button.addEventListener("click", () => setAuthMode(button.dataset.authMode)));
   document.querySelector("#login-form").addEventListener("submit", async event => {
     event.preventDefault();
-    const submitButton = event.currentTarget.querySelector('[type="submit"]');
+    const formElement = event.currentTarget;
+    const submitButton = formElement.querySelector('[type="submit"]');
     if (submitButton.disabled) return;
     submitButton.disabled = true;
-    const form = new FormData(event.currentTarget);
+    const form = new FormData(formElement);
     const email = String(form.get("email") || "").trim();
     const password = String(form.get("password") || "");
     try {
-      const response = await fetch(`${API}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-      if (response.status === 401) {
-        throw new Error("Correo o contraseña incorrectos.");
+      if (state.authMode === "invite") {
+        await acceptInvite(state.inviteToken, password);
+        state.inviteToken = null;
+      } else if (state.authMode === "reset") {
+        await updateUser({ password });
+      } else {
+        const response = await fetch(`${API}/auth/${state.authMode}`, {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.message || `No se pudo completar el acceso (${response.status}).`);
+        if (state.authMode !== "login") {
+          setAuthMode("login");
+          showLogin(data.message);
+          return;
+        }
       }
-      if (response.status === 403) {
-        throw new Error("La cuenta no tiene un rol asignado. Contacta al administrador del sistema.");
-      }
-      if (!response.ok) {
-        throw new Error(`El servidor respondió con error (${response.status}).`);
-      }
-      const account = await response.json();
-      if (account.role !== "ADMIN") {
-        throw new Error("El usuario existe, pero no tiene el rol ADMIN requerido para este panel.");
-      }
-      state.auth = btoa(unescape(encodeURIComponent(`${email}:${password}`)));
+      const account = await api("/auth/me", {}, true);
+      state.auth = "session";
       state.email = account.email;
       state.logoutInProgress = false;
-      sessionStorage.setItem(tokenKey, state.auth);
-      sessionStorage.setItem("pulso.email", email);
+      sessionStorage.setItem("pulso.email", account.email);
       state.cache = {};
       showApp();
     } catch (error) {
       state.auth = "";
-      showLogin(error instanceof TypeError
-        ? "No fue posible conectar con la API. Confirma que Spring Boot esté ejecutándose."
-        : error.message || "No se pudo iniciar sesión.");
+      showLogin(error instanceof TypeError ? "No fue posible conectar con el servidor. Intenta de nuevo." : error.message || "No se pudo iniciar sesión.");
     } finally {
+      formElement.elements.password.value = "";
       submitButton.disabled = false;
     }
   });
@@ -1089,9 +1116,34 @@
     if (event.target === dialog && dialog.dataset.closeOnBackdrop !== "false") dialog.close();
   });
 
-  if (state.auth) {
-    api("/users").then(() => showApp()).catch(() => logout("La sesión expiró. Ingresa nuevamente."));
-  } else {
-    showLogin();
+  showLogin();
+  try {
+    const callback = await handleAuthCallback();
+    if (callback?.type === "invite") {
+      state.inviteToken = callback.token;
+      setAuthMode("invite");
+      return;
+    }
+    if (callback?.type === "recovery") {
+      setAuthMode("reset");
+      return;
+    }
+    const settings = await fetch(`${API}/auth/settings`);
+    const configuration = await settings.json().catch(() => ({}));
+    if (!settings.ok) throw new Error(configuration.message || "El servicio de acceso no está disponible.");
+    setAuthMode("login");
+    const response = await fetch(`${API}/auth/me`);
+    if (response.ok) {
+      const account = await response.json();
+      state.auth = "session";
+      state.email = account.email;
+      state.logoutInProgress = false;
+      showApp();
+    } else if (response.status !== 401) {
+      const detail = await response.json().catch(() => ({}));
+      showLogin(detail.message || "No se pudo recuperar la sesión.");
+    }
+  } catch (error) {
+    showLogin(error.message || "No se pudo preparar el acceso. Intenta nuevamente.");
   }
 })();

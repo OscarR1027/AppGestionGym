@@ -1,0 +1,1008 @@
+{
+  "version": "8",
+  "dialect": "postgres",
+  "id": "1b7c8761-a5fa-4773-9d4d-3183df103258",
+  "prevIds": [
+    "00000000-0000-0000-0000-000000000000"
+  ],
+  "ddl": [
+    {
+      "isRlsEnabled": false,
+      "name": "gym_affiliation_coaches",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "gym_affiliations",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "gym_coaches",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "gym_plan_services",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "gym_plans",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "gym_products",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "gym_sale_products",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "gym_sales",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "gym_services",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "gym_users",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "affiliation_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_affiliation_coaches"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "coach_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_affiliation_coaches"
+    },
+    {
+      "type": "date",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "start_date",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_affiliation_coaches"
+    },
+    {
+      "type": "date",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "end_date",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_affiliation_coaches"
+    },
+    {
+      "type": "serial",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_affiliations"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_affiliations"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "type_plan_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_affiliations"
+    },
+    {
+      "type": "date",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "affiliation_date",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_affiliations"
+    },
+    {
+      "type": "date",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "end_affiliation",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_affiliations"
+    },
+    {
+      "type": "numeric(14,2)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "paid_value",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_affiliations"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "payment_method",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_affiliations"
+    },
+    {
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "renewal",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_affiliations"
+    },
+    {
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "invoice_cancelled",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_affiliations"
+    },
+    {
+      "type": "serial",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id_coach",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_coaches"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name_coach",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_coaches"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "photo_data",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_coaches"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "plan_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_plan_services"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "service_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_plan_services"
+    },
+    {
+      "type": "serial",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id_type_plan",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_plans"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name_plan",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_plans"
+    },
+    {
+      "type": "numeric(14,2)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "value",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_plans"
+    },
+    {
+      "type": "serial",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_products"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name_product",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_products"
+    },
+    {
+      "type": "numeric(14,2)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "value",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_products"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "amount",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_products"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "photo_data",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_products"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "sale_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_sale_products"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "product_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_sale_products"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "product_name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_sale_products"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "amount",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_sale_products"
+    },
+    {
+      "type": "numeric(14,2)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "unit_price",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_sale_products"
+    },
+    {
+      "type": "numeric(14,2)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "subtotal",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_sale_products"
+    },
+    {
+      "type": "serial",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_sales"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_sales"
+    },
+    {
+      "type": "date",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "sale_date",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_sales"
+    },
+    {
+      "type": "numeric(14,2)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "total_value",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_sales"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "payment_method",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_sales"
+    },
+    {
+      "type": "serial",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id_service",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_services"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "service_name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_services"
+    },
+    {
+      "type": "serial",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_users"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_users"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "mail",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_users"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "address",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_users"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "phone_number",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_users"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "document_number",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_users"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "photo_data",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_users"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "physical_condition_report",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_users"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'USER'",
+      "generated": null,
+      "identity": null,
+      "name": "role",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "gym_users"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "affiliation_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "gym_affiliations",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "gym_affiliation_coaches_affiliation_id_gym_affiliations_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "gym_affiliation_coaches"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "coach_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "gym_coaches",
+      "columnsTo": [
+        "id_coach"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "gym_affiliation_coaches_coach_id_gym_coaches_id_coach_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "gym_affiliation_coaches"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "gym_users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "gym_affiliations_user_id_gym_users_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "gym_affiliations"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "type_plan_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "gym_plans",
+      "columnsTo": [
+        "id_type_plan"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "gym_affiliations_type_plan_id_gym_plans_id_type_plan_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "gym_affiliations"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "plan_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "gym_plans",
+      "columnsTo": [
+        "id_type_plan"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "gym_plan_services_plan_id_gym_plans_id_type_plan_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "gym_plan_services"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "service_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "gym_services",
+      "columnsTo": [
+        "id_service"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "gym_plan_services_service_id_gym_services_id_service_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "gym_plan_services"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "sale_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "gym_sales",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "gym_sale_products_sale_id_gym_sales_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "gym_sale_products"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "product_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "gym_products",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "gym_sale_products_product_id_gym_products_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "gym_sale_products"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "gym_users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "gym_sales_user_id_gym_users_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "gym_sales"
+    },
+    {
+      "columns": [
+        "affiliation_id",
+        "coach_id"
+      ],
+      "nameExplicit": false,
+      "name": "gym_affiliation_coaches_pkey",
+      "entityType": "pks",
+      "schema": "public",
+      "table": "gym_affiliation_coaches"
+    },
+    {
+      "columns": [
+        "plan_id",
+        "service_id"
+      ],
+      "nameExplicit": false,
+      "name": "gym_plan_services_pkey",
+      "entityType": "pks",
+      "schema": "public",
+      "table": "gym_plan_services"
+    },
+    {
+      "columns": [
+        "sale_id",
+        "product_id"
+      ],
+      "nameExplicit": false,
+      "name": "gym_sale_products_pkey",
+      "entityType": "pks",
+      "schema": "public",
+      "table": "gym_sale_products"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "gym_affiliations_pkey",
+      "schema": "public",
+      "table": "gym_affiliations",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id_coach"
+      ],
+      "nameExplicit": false,
+      "name": "gym_coaches_pkey",
+      "schema": "public",
+      "table": "gym_coaches",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id_type_plan"
+      ],
+      "nameExplicit": false,
+      "name": "gym_plans_pkey",
+      "schema": "public",
+      "table": "gym_plans",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "gym_products_pkey",
+      "schema": "public",
+      "table": "gym_products",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "gym_sales_pkey",
+      "schema": "public",
+      "table": "gym_sales",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id_service"
+      ],
+      "nameExplicit": false,
+      "name": "gym_services_pkey",
+      "schema": "public",
+      "table": "gym_services",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "gym_users_pkey",
+      "schema": "public",
+      "table": "gym_users",
+      "entityType": "pks"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "mail"
+      ],
+      "nullsNotDistinct": false,
+      "name": "gym_users_mail_key",
+      "schema": "public",
+      "table": "gym_users",
+      "entityType": "uniques"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "document_number"
+      ],
+      "nullsNotDistinct": false,
+      "name": "gym_users_document_number_key",
+      "schema": "public",
+      "table": "gym_users",
+      "entityType": "uniques"
+    },
+    {
+      "value": "\"end_affiliation\" >= \"affiliation_date\"",
+      "name": "affiliation_dates_ordered",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "gym_affiliations"
+    },
+    {
+      "value": "\"value\" >= 0",
+      "name": "plan_value_nonnegative",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "gym_plans"
+    },
+    {
+      "value": "\"amount\" >= 0",
+      "name": "product_stock_nonnegative",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "gym_products"
+    },
+    {
+      "value": "\"value\" >= 0",
+      "name": "product_value_nonnegative",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "gym_products"
+    },
+    {
+      "value": "\"amount\" > 0",
+      "name": "sale_amount_positive",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "gym_sale_products"
+    }
+  ],
+  "renames": []
+}
