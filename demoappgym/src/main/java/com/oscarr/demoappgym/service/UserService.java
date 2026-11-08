@@ -50,8 +50,8 @@ public class UserService implements GenericCrud<User,Long> {
         User saved = userRepository.save(user);
         if (createCoach) {
             Coach coach = new Coach();
-            coach.setNameCoach(saved.getName());
-            coach.setPhotoData(saved.getPhotoData());
+            coach.setNameCoach(user.getName());
+            coach.setPhotoData(user.getPhotoData());
             coachRepository.save(coach);
         }
         return saved;

@@ -7,6 +7,7 @@ import com.oscarr.demoappgym.model.enums.Role;
 import com.oscarr.demoappgym.exception.BusinessException;
 import com.oscarr.demoappgym.service.UserService;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -104,6 +105,24 @@ class UserControllerTests {
         var response = userController.createUser(request, null);
 
         assertEquals(photo, response.getBody().getPhotoData());
+    }
+
+    @Test
+    void creatingCoachUserPassesPhotoToService() {
+        String photo = "data:image/jpeg;base64,/9j/2Q==";
+        UserRequest request = requestWithRole(Role.COACH);
+        request.setPhotoData(photo);
+        var adminAuthentication = new UsernamePasswordAuthenticationToken(
+                "admin@gym.local",
+                "password",
+                List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+        when(userService.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        userController.createUser(request, adminAuthentication);
+
+        ArgumentCaptor<User> user = ArgumentCaptor.forClass(User.class);
+        verify(userService).save(user.capture());
+        assertEquals(photo, user.getValue().getPhotoData());
     }
 
     @Test
