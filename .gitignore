@@ -1,5 +1,6 @@
 ﻿# Compiled output de Maven
 target/
+dist/
 
 # Wrapper de Maven (opcional dejarlo, pero si no lo usas, ignóralo)
 # .mvn/

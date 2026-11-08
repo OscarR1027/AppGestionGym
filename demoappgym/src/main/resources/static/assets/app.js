@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const API = "/api";
+  const API = (window.APP_CONFIG?.apiBaseUrl || "/api").replace(/\/+$/, "");
   const tokenKey = "pulso.auth";
   const resources = {
     users: {
