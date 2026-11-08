@@ -5,12 +5,29 @@ import { fileURLToPath } from "node:url";
 const projectRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const staticDirectory = resolve(projectRoot, "demoappgym/src/main/resources/static");
 const outputDirectory = resolve(projectRoot, "dist");
-const apiBaseUrl = process.env.APP_API_BASE_URL?.trim().replace(/\/+$/, "") || "/api";
+const configuredApiBaseUrl = process.env.APP_API_BASE_URL?.trim().replace(/\/+$/, "");
 
-if (!apiBaseUrl.startsWith("/")) {
-  const parsedApiUrl = new URL(apiBaseUrl);
+if (process.env.VERCEL && !configuredApiBaseUrl) {
+  throw new Error(
+    "Falta APP_API_BASE_URL en Vercel. Despliega primero el backend Spring Boot y configura su URL pública terminada en /api."
+  );
+}
+
+const apiBaseUrl = configuredApiBaseUrl || "/api";
+
+if (apiBaseUrl !== "/api") {
+  let parsedApiUrl;
+  try {
+    parsedApiUrl = new URL(apiBaseUrl);
+  } catch {
+    throw new Error("APP_API_BASE_URL debe ser una URL pública absoluta o /api.");
+  }
+
   if (!["http:", "https:"].includes(parsedApiUrl.protocol)) {
     throw new Error("APP_API_BASE_URL debe usar una URL http o https.");
+  }
+  if (!parsedApiUrl.pathname.replace(/\/+$/, "").endsWith("/api") || parsedApiUrl.search || parsedApiUrl.hash) {
+    throw new Error("APP_API_BASE_URL debe terminar en /api y no debe incluir parámetros ni fragmentos.");
   }
 }
 
