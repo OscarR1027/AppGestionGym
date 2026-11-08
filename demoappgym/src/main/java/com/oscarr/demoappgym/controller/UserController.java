@@ -18,6 +18,7 @@ import com.oscarr.demoappgym.exception.BusinessException;
 import com.oscarr.demoappgym.model.dto.UserRequest;
 import com.oscarr.demoappgym.model.dto.UserResponse;
 import com.oscarr.demoappgym.model.entity.User;
+import com.oscarr.demoappgym.model.enums.DocumentType;
 import com.oscarr.demoappgym.model.enums.Role;
 import com.oscarr.demoappgym.service.UserService;
 
@@ -45,11 +46,14 @@ public class UserController {
             throw new AccessDeniedException("Solo un administrador puede asignar el rol solicitado");
         }
         if (request.getDocumentNumber() == null || request.getDocumentNumber().isBlank()) {
-            throw new BusinessException("La cédula de identidad es obligatoria para crear un usuario");
+            throw new BusinessException("El número de documento es obligatorio para crear un usuario");
         }
 
         User user = new User();
         applyRequest(user, request);
+        user.setDocumentType(request.getDocumentType() == null
+                ? DocumentType.CEDULA_CIUDADANIA
+                : request.getDocumentType());
         user.setRole(requestedRole == null ? Role.USER : requestedRole);
         return ResponseEntity.ok(toResponse(userService.save(user), false));
     }
@@ -93,6 +97,9 @@ public class UserController {
         }
         user.setPhoneNumber(request.getPhoneNumber());
         user.setDocumentNumber(request.getDocumentNumber());
+        if (request.getDocumentType() != null) {
+            user.setDocumentType(request.getDocumentType());
+        }
         if (request.hasPhotoData()) {
             user.setPhotoData(request.getPhotoData());
         }
@@ -102,9 +109,11 @@ public class UserController {
     }
 
     private UserResponse toResponse(User user, boolean includePassword) {
-        return new UserResponse(user.getCodeUser(), user.getName(), user.getAddress(),
+        UserResponse response = new UserResponse(user.getCodeUser(), user.getName(), user.getAddress(),
                 user.getPhoneNumber(), user.getMail(), user.getDocumentNumber(),
                 includePassword ? user.getPassword() : null, user.getPhotoData(), user.getPhysicalConditionReport(),
                 user.getRole() == null ? null : user.getRole().name());
+        response.setDocumentType(user.getDocumentType() == null ? null : user.getDocumentType().name());
+        return response;
     }
 }

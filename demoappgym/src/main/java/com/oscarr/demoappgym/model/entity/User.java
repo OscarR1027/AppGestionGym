@@ -1,6 +1,7 @@
 package com.oscarr.demoappgym.model.entity;
 
 import com.oscarr.demoappgym.model.enums.Role;
+import com.oscarr.demoappgym.model.enums.DocumentType;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
@@ -36,6 +37,10 @@ public class User {
 
     @Column(name = "document_number", length = 30)
         private String documentNumber;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "document_type", length = 30)
+        private DocumentType documentType;
 
     @Column(name = "photo_data", columnDefinition = "LONGTEXT")
         private String photoData;
@@ -124,6 +129,14 @@ public class User {
 
     public void setDocumentNumber(String documentNumber) {
         this.documentNumber = documentNumber;
+    }
+
+    public DocumentType getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(DocumentType documentType) {
+        this.documentType = documentType;
     }
 
     public String getPhotoData() {

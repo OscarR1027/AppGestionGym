@@ -114,6 +114,9 @@ public class AffiliationController {
         response.setId(affiliation.getNumberAffiliation());
         response.setUserId(affiliation.getUser().getCodeUser());
         response.setUserName(affiliation.getUser().getName());
+        response.setUserDocumentType(affiliation.getUser().getDocumentType() == null
+                ? null
+                : affiliation.getUser().getDocumentType().name());
         response.setUserDocumentNumber(affiliation.getUser().getDocumentNumber());
         response.setUserPhoneNumber(affiliation.getUser().getPhoneNumber());
         response.setAffiliationDate(affiliation.getAffiliationDate());

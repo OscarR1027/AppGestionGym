@@ -2,6 +2,7 @@ package com.oscarr.demoappgym.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.oscarr.demoappgym.model.enums.Role;
+import com.oscarr.demoappgym.model.enums.DocumentType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,7 @@ public class UserRequest {
     private Long phoneNumber;
 
     private String documentNumber;
+    private DocumentType documentType;
 
     @Size(max = 1400000, message = "La foto no puede superar 1 MB")
     @Pattern(regexp = "^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$",
@@ -78,6 +80,14 @@ public class UserRequest {
 
     public void setDocumentNumber(String documentNumber) {
         this.documentNumber = documentNumber;
+    }
+
+    public DocumentType getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(DocumentType documentType) {
+        this.documentType = documentType;
     }
 
     public String getPhotoData() {

@@ -6,6 +6,7 @@ public class UserResponse {
     private String address;
     private Long phoneNumber;
     private String documentNumber;
+    private String documentType;
     private String mail;
     private String password;
     private String photoData;
@@ -77,6 +78,14 @@ public class UserResponse {
 
     public void setDocumentNumber(String documentNumber) {
         this.documentNumber = documentNumber;
+    }
+
+    public String getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
     }
 
     public String getMail() {

@@ -7,19 +7,20 @@
     users: {
       label: "Clientes", singular: "cliente", path: "/users", id: "id",
       description: "Personas registradas en el gimnasio.",
-      columns: [["photoData", "Foto"], ["id", "ID"], ["name", "Nombre"], ["documentNumber", "Cédula"], ["mail", "Correo"], ["phoneNumber", "Teléfono"], ["role", "Rol"]],
+      columns: [["photoData", "Foto"], ["id", "ID"], ["name", "Nombre"], ["documentType", "Tipo documento"], ["documentNumber", "Número de documento"], ["mail", "Correo"], ["phoneNumber", "Teléfono"], ["role", "Rol"]],
       fields: [
         { name: "name", label: "Nombre", required: true },
         { name: "mail", label: "Correo electrónico", type: "email", required: true },
         { name: "password", label: "Contraseña", type: "password", help: "En edición, deja el campo vacío para conservar la actual o escribe una nueva contraseña." },
         { name: "address", label: "Dirección", required: true },
         { name: "phoneNumber", label: "Teléfono", type: "number", required: true },
-        { name: "documentNumber", label: "Cédula de identidad", required: true, createOnlyRequired: true },
+        { name: "documentType", label: "Tipo de documento", type: "select", required: true, options: [["CEDULA_CIUDADANIA", "Cédula de ciudadanía"], ["TARJETA_IDENTIDAD", "Tarjeta de identidad"]] },
+        { name: "documentNumber", label: "Número de documento", required: true, createOnlyRequired: true },
         { name: "photoData", label: "Foto de la persona (opcional)", type: "photo", wide: true },
         { name: "physicalConditionReport", label: "Reporte de condición física", type: "textarea" },
         { name: "role", label: "Rol", type: "select", required: true, options: [["USER", "Cliente"], ["COACH", "Entrenador"], ["ADMIN", "Administrador"]] }
       ],
-      payload: form => ({ name: form.name, mail: form.mail, password: form.password, address: form.address, phoneNumber: Number(form.phoneNumber), documentNumber: form.documentNumber, photoData: form.photoData || null, physicalConditionReport: form.physicalConditionReport || null, role: form.role || "USER" })
+      payload: form => ({ name: form.name, mail: form.mail, password: form.password, address: form.address, phoneNumber: Number(form.phoneNumber), documentType: form.documentType || "CEDULA_CIUDADANIA", documentNumber: form.documentNumber, photoData: form.photoData || null, physicalConditionReport: form.physicalConditionReport || null, role: form.role || "USER" })
     },
     coaches: {
       label: "Entrenadores", singular: "entrenador", path: "/coachs", id: "idCoach",
@@ -456,6 +457,7 @@
     if (key === "coaches" && Array.isArray(value)) return escapeHtml(value.map(item => item.coachName).join(", ") || "Sin asignar");
     if (key === "invoiceCancelled") return value ? `<span class="pill warn">Anulada</span>` : `<span class="pill neutral">Pagada</span>`;
     if (key === "role") return `<span class="pill neutral">${escapeHtml(value || "USER")}</span>`;
+    if (key === "documentType") return escapeHtml(value === "TARJETA_IDENTIDAD" ? "Tarjeta de identidad" : value ? "Cédula de ciudadanía" : "—");
     if (key === "amount" && Number(value) <= 5) return `<span class="pill warn">${escapeHtml(value)}</span>`;
     return escapeHtml(value ?? "—");
   }
@@ -537,7 +539,9 @@
       const role = key === "users" ? row?.role || "USER" : null;
       const fields = config.fields
         .map(field => {
-          const value = row?.[field.name] ?? (field.name === "role" && key === "users" ? "USER" : "");
+          const value = row?.[field.name] ??
+            (field.name === "role" && key === "users" ? "USER" :
+              field.name === "documentType" && key === "users" ? "CEDULA_CIUDADANIA" : "");
           const markup = fieldMarkup(field, value, id !== null, role);
           if (key !== "users" || field.name !== "password") return markup;
           return `<div data-user-password-field data-required-on-create="${id === null}" ${role === "USER" ? "hidden" : ""}>${markup}</div>`;
@@ -560,6 +564,7 @@
             await api(id ? `${config.path}/${id}` : config.path, { method: id ? "PUT" : "POST", body: JSON.stringify(payload) });
           }
           state.cache[key] = null;
+          if (key === "users" && payload.role === "COACH") state.cache.coaches = null;
           notify(`${config.singular[0].toUpperCase()}${config.singular.slice(1)} ${id ? "actualizado" : "creado"} correctamente.`);
           renderView();
           if (affiliationInvoice) {
@@ -808,7 +813,7 @@
     const total = affiliation.paidValue ?? plan.value;
     const number = formatInvoiceNumber("AF", affiliation.id, affiliation.affiliationDate);
     openDialog(`Factura ${number}`, "Comprobante de afiliación",
-      invoicePaper(number, affiliation.affiliationDate, affiliation.userName, affiliation.userDocumentNumber,
+      invoicePaper(number, affiliation.affiliationDate, affiliation.userName, affiliation.userDocumentType, affiliation.userDocumentNumber,
         affiliation.userPhoneNumber, affiliation.paymentMethod,
         `<div class="table-wrap"><table><thead><tr><th>Plan</th><th>Vigencia</th><th>Entrenadores</th><th>Valor</th></tr></thead><tbody><tr><td>${escapeHtml(affiliation.typePlanName)}</td><td>${formatDate(affiliation.affiliationDate)} - ${formatDate(affiliation.endAffiliation)}</td><td>${coaches}</td><td>${formatMoney(total)}</td></tr></tbody></table></div>`, total),
       async () => {}, "Imprimir");
@@ -835,7 +840,7 @@
       const number = formatInvoiceNumber("F", invoice.id, invoice.saleDate);
       const lines = (invoice.products || []).map(product => `<tr><td>${escapeHtml(product.productName)}</td><td>${escapeHtml(product.amount)}</td><td>${formatMoney(product.unitPrice)}</td><td>${formatMoney(product.subtotal)}</td></tr>`).join("");
       openDialog(`Factura ${number}`, "Comprobante de venta",
-        invoicePaper(number, invoice.saleDate, invoice.userName, invoice.userDocumentNumber,
+        invoicePaper(number, invoice.saleDate, invoice.userName, invoice.userDocumentType, invoice.userDocumentNumber,
           invoice.userPhoneNumber, invoice.paymentMethod,
           `<div class="table-wrap"><table><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th></tr></thead><tbody>${lines || `<tr><td colspan="4">Sin productos</td></tr>`}</tbody></table></div>`, invoice.totalValue),
         async () => {}, "Cerrar");
@@ -849,10 +854,13 @@
     }
   }
 
-  function invoicePaper(number, date, customer, documentNumber, phoneNumber, paymentMethod, lines, total) {
+  function invoicePaper(number, date, customer, documentType, documentNumber, phoneNumber, paymentMethod, lines, total) {
+    const documentLabel = documentType === "TARJETA_IDENTIDAD"
+      ? "Tarjeta de identidad"
+      : documentType === "CEDULA_CIUDADANIA" ? "Cédula de ciudadanía" : "Documento de identidad";
     return `<article class="invoice-paper">
       <header class="invoice-brand"><img src="assets/nox3-fitness-logo.png" alt="NOX 3 Fitness"><div><strong>NOX 3 FITNESS</strong><span>Teléfono: 3142352292</span><span>Factura ${escapeHtml(number)}</span><span>Fecha: ${formatDate(date)}</span></div></header>
-      <section class="invoice-customer"><h3>Datos del cliente</h3><p><strong>Nombre:</strong> ${escapeHtml(customer || "No registrado")}</p><p><strong>Cédula:</strong> ${escapeHtml(documentNumber || "No registrada")}</p><p><strong>Teléfono:</strong> ${escapeHtml(phoneNumber ?? "No registrado")}</p><p><strong>Forma de pago:</strong> ${escapeHtml(paymentMethodLabel(paymentMethod))}</p></section>
+      <section class="invoice-customer"><h3>Datos del cliente</h3><p><strong>Nombre:</strong> ${escapeHtml(customer || "No registrado")}</p><p><strong>${documentLabel}:</strong> ${escapeHtml(documentNumber || "No registrado")}</p><p><strong>Teléfono:</strong> ${escapeHtml(phoneNumber ?? "No registrado")}</p><p><strong>Forma de pago:</strong> ${escapeHtml(paymentMethodLabel(paymentMethod))}</p></section>
       ${lines}<p class="invoice-total">Total pagado: ${formatMoney(total)}</p>
       <footer class="invoice-footer">Gracias por entrenar con NOX 3 Fitness · 3142352292</footer>
     </article>`;

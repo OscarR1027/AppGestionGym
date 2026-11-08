@@ -7,6 +7,7 @@ public class SaleResponse {
     private Long id;
     private Long userId;
     private String userName;
+    private String userDocumentType;
     private String userDocumentNumber;
     private Long userPhoneNumber;
     private LocalDate saleDate;
@@ -17,11 +18,13 @@ public class SaleResponse {
     public SaleResponse() {
     }
 
-    public SaleResponse(Long id, Long userId, String userName, String userDocumentNumber, Long userPhoneNumber,
+    public SaleResponse(Long id, Long userId, String userName, String userDocumentType, String userDocumentNumber,
+            Long userPhoneNumber,
             LocalDate saleDate, Double totalValue, String paymentMethod, List<SaleProductResponse> products) {
         this.id = id;
         this.userId = userId;
         this.userName = userName;
+        this.userDocumentType = userDocumentType;
         this.userDocumentNumber = userDocumentNumber;
         this.userPhoneNumber = userPhoneNumber;
         this.saleDate = saleDate;
@@ -56,6 +59,14 @@ public class SaleResponse {
 
     public String getUserDocumentNumber() {
         return userDocumentNumber;
+    }
+
+    public String getUserDocumentType() {
+        return userDocumentType;
+    }
+
+    public void setUserDocumentType(String userDocumentType) {
+        this.userDocumentType = userDocumentType;
     }
 
     public void setUserDocumentNumber(String userDocumentNumber) {

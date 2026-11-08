@@ -96,6 +96,7 @@ public class SaleController {
                 sale.getIdBillSale(),
                 sale.getUser().getCodeUser(),
                 sale.getUser().getName(),
+                sale.getUser().getDocumentType() == null ? null : sale.getUser().getDocumentType().name(),
                 sale.getUser().getDocumentNumber(),
                 sale.getUser().getPhoneNumber(),
                 sale.getSaleDate(),

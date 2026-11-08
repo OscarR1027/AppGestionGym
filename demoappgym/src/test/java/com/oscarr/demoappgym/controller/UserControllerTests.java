@@ -2,6 +2,7 @@ package com.oscarr.demoappgym.controller;
 
 import com.oscarr.demoappgym.model.dto.UserRequest;
 import com.oscarr.demoappgym.model.entity.User;
+import com.oscarr.demoappgym.model.enums.DocumentType;
 import com.oscarr.demoappgym.model.enums.Role;
 import com.oscarr.demoappgym.exception.BusinessException;
 import com.oscarr.demoappgym.service.UserService;
@@ -53,11 +54,13 @@ class UserControllerTests {
     @Test
     void publicRegistrationDefaultsToRegularUser() {
         UserRequest request = requestWithRole(null);
+        request.setDocumentType(null);
         when(userService.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         var response = userController.createUser(request, null);
 
         assertEquals(Role.USER.name(), response.getBody().getRole());
+        assertEquals(DocumentType.CEDULA_CIUDADANIA.name(), response.getBody().getDocumentType());
     }
 
     @Test
@@ -70,6 +73,17 @@ class UserControllerTests {
 
         assertEquals(Role.USER.name(), response.getBody().getRole());
         verify(userService).save(any(User.class));
+    }
+
+    @Test
+    void clientCanBeCreatedWithIdentityCardDocumentType() {
+        UserRequest request = requestWithRole(Role.USER);
+        request.setDocumentType(DocumentType.TARJETA_IDENTIDAD);
+        when(userService.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        var response = userController.createUser(request, null);
+
+        assertEquals(DocumentType.TARJETA_IDENTIDAD.name(), response.getBody().getDocumentType());
     }
 
     @Test
@@ -156,6 +170,7 @@ class UserControllerTests {
         request.setPassword("password");
         request.setPhoneNumber(3001234567L);
         request.setDocumentNumber("123456789");
+        request.setDocumentType(DocumentType.CEDULA_CIUDADANIA);
         request.setMail("nueva@gym.local");
         request.setRole(role);
         return request;

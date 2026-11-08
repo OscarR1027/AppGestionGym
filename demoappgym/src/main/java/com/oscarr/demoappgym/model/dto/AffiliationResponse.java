@@ -7,6 +7,7 @@ public class AffiliationResponse {
     private Long id;
     private Long userId;
     private String userName;
+    private String userDocumentType;
     private String userDocumentNumber;
     private Long userPhoneNumber;
     private LocalDate affiliationDate;
@@ -48,6 +49,14 @@ public class AffiliationResponse {
 
     public String getUserDocumentNumber() {
         return userDocumentNumber;
+    }
+
+    public String getUserDocumentType() {
+        return userDocumentType;
+    }
+
+    public void setUserDocumentType(String userDocumentType) {
+        this.userDocumentType = userDocumentType;
     }
 
     public void setUserDocumentNumber(String userDocumentNumber) {
