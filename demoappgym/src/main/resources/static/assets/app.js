@@ -17,7 +17,7 @@
         { name: "documentNumber", label: "Cédula de identidad", required: true, createOnlyRequired: true },
         { name: "photoData", label: "Foto de la persona (opcional)", type: "photo", wide: true },
         { name: "physicalConditionReport", label: "Reporte de condición física", type: "textarea" },
-        { name: "role", label: "Rol", type: "select", options: [["USER", "Cliente"], ["COACH", "Entrenador"], ["ADMIN", "Administrador"]] }
+        { name: "role", label: "Rol", type: "select", required: true, options: [["USER", "Cliente"], ["COACH", "Entrenador"], ["ADMIN", "Administrador"]] }
       ],
       payload: form => ({ name: form.name, mail: form.mail, password: form.password, address: form.address, phoneNumber: Number(form.phoneNumber), documentNumber: form.documentNumber, photoData: form.photoData || null, physicalConditionReport: form.physicalConditionReport || null, role: form.role || "USER" })
     },
@@ -481,11 +481,13 @@
     document.querySelector("#resource-table").innerHTML = tableHtml(filtered, config.columns, key);
   }
 
-  function fieldMarkup(field, value = "", edit = false) {
+  function fieldMarkup(field, value = "", edit = false, role = null) {
     const isPasswordEdit = edit && field.name === "password";
-    const required = (field.required && !(edit && field.createOnlyRequired) || field.name === "password" && !edit) && !isPasswordEdit ? "required" : "";
+    const required = (field.required && !(edit && field.createOnlyRequired) || field.name === "password" && !edit) &&
+      !isPasswordEdit && !(field.name === "password" && role === "USER") ? "required" : "";
     const min = field.min !== undefined ? `min="${field.min}"` : "";
     const step = field.step ? `step="${field.step}"` : "";
+    const disabled = field.name === "password" && role === "USER" ? "disabled" : "";
     const wide = field.wide || field.type === "textarea" ? "wide" : "";
     if (field.type === "select" || field.type === "selectData") {
       let options = field.options || [];
@@ -505,14 +507,14 @@
       const preview = value
         ? `<img class="photo-preview" src="${escapeHtml(value)}" alt="Vista previa de la foto">`
         : `<span class="photo-placeholder">Sin foto seleccionada</span>`;
-      return `<div class="${wide} photo-field"><span class="field-label">${escapeHtml(field.label)}</span><div class="photo-actions"><button class="button photo-action" type="button" data-photo-picker="photoFile"><svg class="photo-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"/></svg><span>Adjuntar foto</span></button><button class="button photo-action" type="button" data-photo-camera><svg class="photo-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l2-3h6l2 3h3a2 2 0 0 1 2 2v10H2V9a2 2 0 0 1 2-2Z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Usar cámara</span></button></div><input class="photo-input-hidden" type="file" name="photoFile" accept="image/*" data-photo-input><input type="hidden" name="photoData" value="${escapeHtml(value)}"><div class="camera-panel" data-camera-panel hidden><video class="camera-preview" data-camera-video autoplay playsinline></video><div class="photo-actions"><button class="button small primary" type="button" data-camera-capture>Tomar foto</button><button class="button small" type="button" data-camera-stop>Cerrar cámara</button></div></div><small class="muted">Opcional. Adjunta una imagen o captura usando la cámara conectada.</small><span class="photo-preview-wrap" data-photo-preview>${preview}</span></div>`;
+      return `<div class="${wide} photo-field"><span class="field-label">${escapeHtml(field.label)}</span><div class="photo-actions"><button class="button photo-action" type="button" data-photo-picker="photoFile"><svg class="photo-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"/></svg><span>Adjuntar foto</span></button><button class="button photo-action" type="button" data-photo-camera><svg class="photo-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l2-3h6l2 3h3a2 2 0 0 1 2 2v10H2V9a2 2 0 0 1 2-2Z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Usar cámara</span></button><button class="button photo-action" type="button" data-photo-remove ${value ? "" : "hidden"}>Quitar foto</button></div><input class="photo-input-hidden" type="file" name="photoFile" accept="image/*" data-photo-input><input type="hidden" name="photoData" value="${escapeHtml(value)}"><div class="camera-panel" data-camera-panel hidden><video class="camera-preview" data-camera-video autoplay playsinline></video><div class="photo-actions"><button class="button small primary" type="button" data-camera-capture>Tomar foto</button><button class="button small" type="button" data-camera-stop>Cerrar cámara</button></div></div><small class="muted">Opcional. Adjunta una imagen o captura usando la cámara conectada.</small><span class="photo-preview-wrap" data-photo-preview>${preview}</span></div>`;
     }
     const help = field.help ? `<small class="muted">${escapeHtml(field.help)}</small>` : "";
     const safeValue = isPasswordEdit ? "" : value;
     if (field.type === "textarea") return `<label class="${wide}">${escapeHtml(field.label)}<textarea name="${escapeHtml(field.name)}">${escapeHtml(value)}</textarea>${help}</label>`;
     const type = field.type || "text";
     const autocomplete = type === "password" ? "autocomplete=\"new-password\"" : "";
-    return `<label class="${wide}">${escapeHtml(field.label)}<input name="${escapeHtml(field.name)}" type="${type}" value="${escapeHtml(safeValue)}" ${required} ${min} ${step} ${autocomplete}>${help}</label>`;
+    return `<label class="${wide}">${escapeHtml(field.label)}<input name="${escapeHtml(field.name)}" type="${type}" value="${escapeHtml(safeValue)}" ${required} ${min} ${step} ${disabled} ${autocomplete}>${help}</label>`;
   }
 
   async function openResourceForm(key, id = null) {
@@ -532,11 +534,16 @@
           coachEndDate: row.coaches[0]?.endDate || ""
         };
       }
+      const role = key === "users" ? row?.role || "USER" : null;
       const fields = config.fields
-        .filter(field => !(key === "users" && id === null && field.name === "role"))
-        .map(field => fieldMarkup(field, row?.[field.name] ?? "", id !== null))
+        .map(field => {
+          const value = row?.[field.name] ?? (field.name === "role" && key === "users" ? "USER" : "");
+          const markup = fieldMarkup(field, value, id !== null, role);
+          if (key !== "users" || field.name !== "password") return markup;
+          return `<div data-user-password-field data-required-on-create="${id === null}" ${role === "USER" ? "hidden" : ""}>${markup}</div>`;
+        })
         .join("");
-      openDialog(`${id ? "Editar" : "Nuevo"} ${config.singular}`, `${id && key === "users" ? "La contraseña solo cambia si la escribes. Déjala vacía para conservar la actual." : "Completa los datos y guarda los cambios."}`,
+      openDialog(`${id ? "Editar" : "Nuevo"} ${config.singular}`, `${key === "users" && id === null ? "El rol predeterminado es Cliente. Solo los usuarios con otro rol necesitan una contraseña." : id && key === "users" ? "La contraseña solo cambia si la escribes. Déjala vacía para conservar la actual." : "Completa los datos y guarda los cambios."}`,
         `<div class="form-grid">${fields}</div>`,
         async formData => {
           const form = Object.fromEntries(formData.entries());
@@ -696,6 +703,8 @@
       const preview = dialogForm.querySelector("[data-photo-preview]");
       if (photoData) photoData.value = dataUrl;
       if (preview) preview.innerHTML = `<img class="photo-preview" src="${escapeHtml(dataUrl)}" alt="Vista previa de la foto">`;
+      const removeButton = dialogForm.querySelector("[data-photo-remove]");
+      if (removeButton) removeButton.hidden = false;
       stopPhotoCamera();
     } catch (error) {
       notify(error.message, true);
@@ -1031,6 +1040,17 @@
   });
   dialogForm.addEventListener("change", event => {
     if (event.target.matches(".sale-line select, .sale-line input")) updateSaleTotal();
+    if (event.target.matches('select[name="role"]')) {
+      const passwordField = dialogForm.querySelector("[data-user-password-field]");
+      const password = passwordField?.querySelector('input[name="password"]');
+      const isClient = event.target.value === "USER";
+      if (passwordField) passwordField.hidden = isClient;
+      if (password) {
+        password.required = !isClient && passwordField.dataset.requiredOnCreate === "true";
+        password.disabled = isClient;
+        if (isClient) password.value = "";
+      }
+    }
     if (event.target.matches("[data-photo-input]")) {
       const file = event.target.files?.[0];
       const preview = dialogForm.querySelector("[data-photo-preview]");
@@ -1047,6 +1067,8 @@
       if (otherInput) otherInput.value = "";
       const photoData = dialogForm.querySelector('input[name="photoData"]');
       if (photoData) photoData.value = "";
+      const removeButton = dialogForm.querySelector("[data-photo-remove]");
+      if (removeButton) removeButton.hidden = false;
       preview.innerHTML = `<img class="photo-preview" alt="Vista previa de la foto">`;
       const generation = Number(dialogForm.dataset.photoGeneration || 0) + 1;
       dialogForm.dataset.photoGeneration = String(generation);
@@ -1069,6 +1091,20 @@
     }
   });
   dialogForm.addEventListener("click", event => {
+    const removeButton = event.target.closest("[data-photo-remove]");
+    if (removeButton) {
+      const generation = Number(dialogForm.dataset.photoGeneration || 0) + 1;
+      dialogForm.dataset.photoGeneration = String(generation);
+      dialogForm.dataset.photoProcessing = "false";
+      dialogForm.querySelectorAll("[data-photo-input]").forEach(input => { input.value = ""; });
+      const photoData = dialogForm.querySelector('input[name="photoData"]');
+      if (photoData) photoData.value = "";
+      const preview = dialogForm.querySelector("[data-photo-preview]");
+      if (preview) preview.innerHTML = `<span class="photo-placeholder">Sin foto seleccionada</span>`;
+      removeButton.hidden = true;
+      stopPhotoCamera();
+      return;
+    }
     const picker = event.target.closest("[data-photo-picker]");
     if (picker) {
       const input = dialogForm.querySelector(`input[name="${picker.dataset.photoPicker}"]`);

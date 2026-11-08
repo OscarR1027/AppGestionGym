@@ -5,6 +5,7 @@ import com.oscarr.demoappgym.model.entity.User;
 import com.oscarr.demoappgym.model.enums.Role;
 import com.oscarr.demoappgym.exception.BusinessException;
 import com.oscarr.demoappgym.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,7 +15,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -58,6 +62,18 @@ class UserControllerTests {
     }
 
     @Test
+    void clientCanBeCreatedWithoutPassword() {
+        UserRequest request = requestWithRole(Role.USER);
+        request.setPassword(null);
+        when(userService.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        var response = userController.createUser(request, null);
+
+        assertEquals(Role.USER.name(), response.getBody().getRole());
+        verify(userService).save(any(User.class));
+    }
+
+    @Test
     void registrationRequiresDocumentNumber() {
         UserRequest request = requestWithRole(null);
         request.setDocumentNumber(" ");
@@ -91,6 +107,48 @@ class UserControllerTests {
         var response = userController.updateUser(1L, request);
 
         assertEquals(photo, response.getBody().getPhotoData());
+    }
+
+    @Test
+    void updateCanRemovePhotoWhenExplicitlySetToNull() {
+        User user = new User();
+        user.setCodeUser(1L);
+        user.setPassword("existing-hash");
+        user.setPhotoData("data:image/jpeg;base64,/9j/2Q==");
+        when(userService.findById(1L)).thenReturn(Optional.of(user));
+        when(userService.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        UserRequest request = requestWithRole(null);
+        request.setPhotoData(null);
+
+        var response = userController.updateUser(1L, request);
+
+        assertNull(response.getBody().getPhotoData());
+    }
+
+    @Test
+    void updateKeepsPhotoWhenPhotoWasNotIncludedInRequest() {
+        String photo = "data:image/jpeg;base64,/9j/2Q==";
+        User user = new User();
+        user.setCodeUser(1L);
+        user.setPassword("existing-hash");
+        user.setPhotoData(photo);
+        when(userService.findById(1L)).thenReturn(Optional.of(user));
+        when(userService.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        var response = userController.updateUser(1L, requestWithRole(null));
+
+        assertEquals(photo, response.getBody().getPhotoData());
+    }
+
+    @Test
+    void requestDistinguishesOmittedPhotoFromExplicitRemoval() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        UserRequest omitted = objectMapper.readValue("{}", UserRequest.class);
+        UserRequest removed = objectMapper.readValue("{\"photoData\":null}", UserRequest.class);
+
+        assertFalse(omitted.hasPhotoData());
+        assertTrue(removed.hasPhotoData());
     }
 
     private UserRequest requestWithRole(Role role) {

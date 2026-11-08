@@ -1,5 +1,6 @@
 package com.oscarr.demoappgym.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,6 +24,8 @@ public class ProductRequest {
     @Pattern(regexp = "^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$",
             message = "La foto debe ser una imagen PNG, JPEG o WEBP válida")
     private String photoData;
+
+    private boolean photoDataProvided;
 
     public ProductRequest() {
     }
@@ -61,7 +64,13 @@ public class ProductRequest {
         return photoData;
     }
 
+    @JsonSetter("photoData")
     public void setPhotoData(String photoData) {
         this.photoData = photoData;
+        this.photoDataProvided = true;
+    }
+
+    public boolean hasPhotoData() {
+        return photoDataProvided;
     }
 }

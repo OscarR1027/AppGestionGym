@@ -1,7 +1,7 @@
 package com.oscarr.demoappgym.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.oscarr.demoappgym.model.enums.Role;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -27,6 +27,8 @@ public class UserRequest {
     @Pattern(regexp = "^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$",
             message = "La foto debe ser una imagen PNG, JPEG o WEBP válida")
     private String photoData;
+
+    private boolean photoDataProvided;
 
     @NotBlank(message = "El correo es obligatorio")
     @Email(message = "El correo no tiene un formato válido")
@@ -82,8 +84,14 @@ public class UserRequest {
         return photoData;
     }
 
+    @JsonSetter("photoData")
     public void setPhotoData(String photoData) {
         this.photoData = photoData;
+        this.photoDataProvided = true;
+    }
+
+    public boolean hasPhotoData() {
+        return photoDataProvided;
     }
 
     public String getMail() {

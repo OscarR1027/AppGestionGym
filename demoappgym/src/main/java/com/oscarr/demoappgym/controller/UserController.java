@@ -44,9 +44,6 @@ public class UserController {
         if (requestedRole != null && requestedRole != Role.USER && !isAdmin) {
             throw new AccessDeniedException("Solo un administrador puede asignar el rol solicitado");
         }
-        if (request.getPassword() == null || request.getPassword().isBlank()) {
-            throw new BusinessException("La contraseña es obligatoria para crear un usuario");
-        }
         if (request.getDocumentNumber() == null || request.getDocumentNumber().isBlank()) {
             throw new BusinessException("La cédula de identidad es obligatoria para crear un usuario");
         }
@@ -96,7 +93,7 @@ public class UserController {
         }
         user.setPhoneNumber(request.getPhoneNumber());
         user.setDocumentNumber(request.getDocumentNumber());
-        if (request.getPhotoData() != null) {
+        if (request.hasPhotoData()) {
             user.setPhotoData(request.getPhotoData());
         }
         user.setMail(request.getMail());

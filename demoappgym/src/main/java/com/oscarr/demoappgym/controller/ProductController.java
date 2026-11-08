@@ -77,7 +77,7 @@ public class ProductController {
         product.setName_Product(request.getNameProduct());
         product.setValue(request.getValue());
         product.setAmount(request.getAmount());
-        if (request.getPhotoData() != null) {
+        if (request.hasPhotoData()) {
             product.setPhotoData(request.getPhotoData());
         }
     }

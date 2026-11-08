@@ -2,12 +2,14 @@ package com.oscarr.demoappgym.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.oscarr.demoappgym.exception.BusinessException;
 import com.oscarr.demoappgym.model.entity.User;
+import com.oscarr.demoappgym.model.enums.Role;
 import com.oscarr.demoappgym.repository.AffiliationRepository;
 import com.oscarr.demoappgym.repository.UserRepository;
 
@@ -28,7 +30,10 @@ public class UserService implements GenericCrud<User,Long> {
     @Override 
     public User save(User user){
         if (user.getPassword() == null || user.getPassword().isBlank()) {
-            throw new BusinessException("La contraseña es obligatoria");
+            if (user.getRole() != Role.USER) {
+                throw new BusinessException("La contraseña es obligatoria para entrenadores y administradores");
+            }
+            user.setPassword(UUID.randomUUID().toString());
         }
         String password = user.getPassword();
         if (!password.startsWith("$2a$") && !password.startsWith("$2b$") && !password.startsWith("$2y$")) {

@@ -44,7 +44,7 @@ public class CoachController {
         return coachService.findById(id)
                 .map(coach -> {
                     coach.setNameCoach(request.getNameCoach());
-                    if (request.getPhotoData() != null) {
+                    if (request.hasPhotoData()) {
                         coach.setPhotoData(request.getPhotoData());
                     }
                     return ResponseEntity.ok(toResponse(coachService.save(coach)));
