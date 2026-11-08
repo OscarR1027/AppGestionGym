@@ -507,7 +507,7 @@
       const preview = value
         ? `<img class="photo-preview" src="${escapeHtml(value)}" alt="Vista previa de la foto">`
         : `<span class="photo-placeholder">Sin foto seleccionada</span>`;
-      return `<div class="${wide} photo-field"><span class="field-label">${escapeHtml(field.label)}</span><div class="photo-actions"><button class="button photo-action" type="button" data-photo-picker="photoFile"><svg class="photo-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"/></svg><span>Adjuntar foto</span></button><button class="button photo-action" type="button" data-photo-camera><svg class="photo-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l2-3h6l2 3h3a2 2 0 0 1 2 2v10H2V9a2 2 0 0 1 2-2Z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Usar cámara</span></button><button class="button photo-action" type="button" data-photo-remove ${value ? "" : "hidden"}>Quitar foto</button></div><input class="photo-input-hidden" type="file" name="photoFile" accept="image/*" data-photo-input><input type="hidden" name="photoData" value="${escapeHtml(value)}"><div class="camera-panel" data-camera-panel hidden><video class="camera-preview" data-camera-video autoplay playsinline></video><div class="photo-actions"><button class="button small primary" type="button" data-camera-capture>Tomar foto</button><button class="button small" type="button" data-camera-stop>Cerrar cámara</button></div></div><small class="muted">Opcional. Adjunta una imagen o captura usando la cámara conectada.</small><span class="photo-preview-wrap" data-photo-preview>${preview}</span></div>`;
+      return `<div class="${wide} photo-field"><span class="field-label">${escapeHtml(field.label)}</span><div class="photo-actions"><button class="button photo-action" type="button" data-photo-picker="photoFile"><svg class="photo-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"/></svg><span>Adjuntar foto</span></button><button class="button photo-action" type="button" data-photo-camera><svg class="photo-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l2-3h6l2 3h3a2 2 0 0 1 2 2v10H2V9a2 2 0 0 1 2-2Z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Usar cámara</span></button></div><input class="photo-input-hidden" type="file" name="photoFile" accept="image/*" data-photo-input><input type="hidden" name="photoData" value="${escapeHtml(value)}"><div class="camera-panel" data-camera-panel hidden><video class="camera-preview" data-camera-video autoplay playsinline></video><div class="photo-actions"><button class="button small primary" type="button" data-camera-capture>Tomar foto</button><button class="button small" type="button" data-camera-stop>Cerrar cámara</button></div></div><small class="muted">Opcional. Adjunta una imagen o captura usando la cámara conectada.</small><span class="photo-preview-wrap" data-photo-preview><span data-photo-preview-content>${preview}</span><button class="photo-remove" type="button" data-photo-remove aria-label="Quitar foto" ${value ? "" : "hidden"}>×</button></span></div>`;
     }
     const help = field.help ? `<small class="muted">${escapeHtml(field.help)}</small>` : "";
     const safeValue = isPasswordEdit ? "" : value;
@@ -702,7 +702,7 @@
       const photoData = dialogForm.querySelector('input[name="photoData"]');
       const preview = dialogForm.querySelector("[data-photo-preview]");
       if (photoData) photoData.value = dataUrl;
-      if (preview) preview.innerHTML = `<img class="photo-preview" src="${escapeHtml(dataUrl)}" alt="Vista previa de la foto">`;
+      if (preview) preview.querySelector("[data-photo-preview-content]").innerHTML = `<img class="photo-preview" src="${escapeHtml(dataUrl)}" alt="Vista previa de la foto">`;
       const removeButton = dialogForm.querySelector("[data-photo-remove]");
       if (removeButton) removeButton.hidden = false;
       stopPhotoCamera();
@@ -1069,7 +1069,7 @@
       if (photoData) photoData.value = "";
       const removeButton = dialogForm.querySelector("[data-photo-remove]");
       if (removeButton) removeButton.hidden = false;
-      preview.innerHTML = `<img class="photo-preview" alt="Vista previa de la foto">`;
+      preview.querySelector("[data-photo-preview-content]").innerHTML = `<img class="photo-preview" alt="Vista previa de la foto">`;
       const generation = Number(dialogForm.dataset.photoGeneration || 0) + 1;
       dialogForm.dataset.photoGeneration = String(generation);
       dialogForm.dataset.photoProcessing = "true";
@@ -1081,7 +1081,7 @@
       }).catch(error => {
         if (dialogForm.dataset.photoGeneration === String(generation)) {
           notify(error.message, true);
-          preview.innerHTML = `<span class="photo-placeholder">No se pudo procesar la foto</span>`;
+          preview.querySelector("[data-photo-preview-content]").innerHTML = `<span class="photo-placeholder">No se pudo procesar la foto</span>`;
         }
       }).finally(() => {
         if (dialogForm.dataset.photoGeneration === String(generation)) {
@@ -1100,7 +1100,7 @@
       const photoData = dialogForm.querySelector('input[name="photoData"]');
       if (photoData) photoData.value = "";
       const preview = dialogForm.querySelector("[data-photo-preview]");
-      if (preview) preview.innerHTML = `<span class="photo-placeholder">Sin foto seleccionada</span>`;
+      if (preview) preview.querySelector("[data-photo-preview-content]").innerHTML = `<span class="photo-placeholder">Sin foto seleccionada</span>`;
       removeButton.hidden = true;
       stopPhotoCamera();
       return;
