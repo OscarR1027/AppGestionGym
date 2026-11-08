@@ -24,3 +24,11 @@ Thumbs.db
 # Archivos de configuración de VS Code / Copilot
 argv.json
 extensions.json
+
+# Netlify API dependencies and local configuration
+node_modules/
+.env
+.env.*
+!.env.example
+.netlify/*
+!.netlify/features/

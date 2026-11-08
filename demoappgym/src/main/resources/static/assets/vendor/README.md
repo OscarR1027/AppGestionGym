@@ -1,0 +1,1 @@
+Browser copies of @netlify/identity 2.0.1 and its gotrue-js 1.0.1 dependency, distributed under the MIT license. The Identity dependency import points to the adjacent file so email confirmation, invitations and password recovery work without a CDN or a frontend build step. Server code imports @netlify/identity from npm.

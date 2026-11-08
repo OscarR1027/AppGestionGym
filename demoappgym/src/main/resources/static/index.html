@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0b0d10">
   <title>Pulso | Gestión del gimnasio</title>
   <link rel="stylesheet" href="assets/app.css">
-  <script src="assets/app.js" defer></script>
+  <script src="assets/app.js" type="module"></script>
 </head>
 <body>
   <section id="login-screen" class="login-screen">
@@ -19,7 +19,8 @@
       <label>Contraseña<input name="password" type="password" autocomplete="current-password" required placeholder="Tu contraseña"></label>
       <p id="login-error" class="message error" hidden></p>
       <button class="button primary full" type="submit">Ingresar al panel <span>→</span></button>
-      <p class="login-foot">Ingresa con una cuenta ya registrada en el sistema y con rol Administrador (ADMIN).</p>
+      <div class="login-actions"><button class="button small" type="button" data-auth-mode="recover">Recuperar contraseña</button> <button class="button small" type="button" data-auth-mode="login" hidden>Volver a ingresar</button></div>
+      <p class="login-foot">Usa el correo autorizado para administrar este gimnasio. Los clientes se gestionan dentro del panel.</p>
     </form>
   </section>
 
