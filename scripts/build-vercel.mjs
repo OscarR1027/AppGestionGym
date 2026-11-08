@@ -6,13 +6,6 @@ const projectRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const staticDirectory = resolve(projectRoot, "demoappgym/src/main/resources/static");
 const outputDirectory = resolve(projectRoot, "dist");
 const configuredApiBaseUrl = process.env.APP_API_BASE_URL?.trim().replace(/\/+$/, "");
-
-if (process.env.VERCEL && !configuredApiBaseUrl) {
-  throw new Error(
-    "Falta APP_API_BASE_URL en Vercel. Despliega primero el backend Spring Boot y configura su URL pública terminada en /api."
-  );
-}
-
 const apiBaseUrl = configuredApiBaseUrl || "/api";
 
 if (apiBaseUrl !== "/api") {
